@@ -14,3 +14,8 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Run
+
+Run by open a simulator `open -a simulator` or connect your own device
+The run `flutter run` in the terminal or select run and then start debugging and select flutter/dart or use F5
