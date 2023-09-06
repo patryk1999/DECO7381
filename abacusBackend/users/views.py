@@ -9,7 +9,7 @@ from rest_framework.response import Response
 # Create your views here.
 
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+#@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def test(request):
     return HttpResponse("I am Ok")
