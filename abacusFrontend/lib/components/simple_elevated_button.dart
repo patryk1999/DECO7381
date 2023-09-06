@@ -22,12 +22,11 @@ class SimpleElevatedButton extends StatelessWidget {
     return FilledButton(
       style: FilledButton.styleFrom(
           padding: padding,
-          shadowColor: const Color(0x000000),
           backgroundColor: color ?? currentTheme.primaryColor,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius)),
           side: const BorderSide(
-            color: Colors.black,
+            color: Color(0xFF386641),
           )),
       onPressed: onPressed as void Function()?,
       child: child,
