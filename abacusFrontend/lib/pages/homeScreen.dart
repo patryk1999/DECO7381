@@ -98,7 +98,7 @@ class SimpleElevatedButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius)),
           side: BorderSide(
-            color: Colors.black,
+            color: Color(0xFF78BC3F),
           )),
       onPressed: onPressed as void Function()?,
       child: child,
