@@ -1,7 +1,7 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
-import 'package:abacusfrontend/components/inputField.dart';
-import '../components/simpleElevatedButton.dart';
+import 'package:abacusfrontend/components/input_field.dart';
+import '../components/simple_elevated_button.dart';
 
 class LoginScreen extends StatefulWidget {
   final Function(String? username, String? password)? onSubmitted;
@@ -74,8 +74,8 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Image.asset('assets/Rwf.png', width: 180, height: 180),
               SizedBox(height: screenHeight * .03),
-              Center(
-                  child: const Text(
+              const Center(
+                  child: Text(
                 'Log In',
                 style: TextStyle(
                   fontSize: 28,
@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               )),
               SizedBox(height: screenHeight * .03),
-              Padding(
+              const Padding(
                 padding: EdgeInsets.only(left: 50.0, bottom: 10),
                 child: Text('Username'),
               ),
@@ -105,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               SizedBox(height: screenHeight * .03),
-              Padding(
+              const Padding(
                 padding: EdgeInsets.only(left: 50.0, bottom: 10),
                 child: Text('Password'),
               ),
@@ -133,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: 200,
                 height: 50,
                 child: SimpleElevatedButton(
-                  color: Color(0xFF78BC3F),
+                  color: const Color(0xFF78BC3F),
                   onPressed: submit,
                   child: const Text(
                     'Log In',
