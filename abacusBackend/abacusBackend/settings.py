@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 
@@ -34,7 +35,13 @@ SECRET_KEY = 'django-insecure-f&ag!v&ja!pt%q7liq+vh_6vvem3bt+2j9@($z7klp+7d9lhn8
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+# This access token lifetime is set to 5 so that we wont need to request with refresh token
+# this is unsafe, but we want to prioritize other aspects of the application
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
+    'ROTATE_REFRESH_TOKENS': True,
+}
 
 # Application definition
 
