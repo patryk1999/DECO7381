@@ -1,4 +1,7 @@
+// ignore: file_names
 import 'package:flutter/material.dart';
+import 'package:abacusfrontend/components/inputField.dart';
+import '../components/simpleElevatedButton.dart';
 
 class LoginScreen extends StatefulWidget {
   final Function(String? username, String? password)? onSubmitted;
@@ -119,6 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     errorText: passwordError,
                     keyboardType: TextInputType.name,
                     textInputAction: TextInputAction.next,
+                    obscureText: true,
                     autoFocus: true,
                   ),
                 ),
@@ -152,90 +156,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class SimpleElevatedButton extends StatelessWidget {
-  const SimpleElevatedButton(
-      {this.child,
-      this.color,
-      this.onPressed,
-      this.borderRadius = 30,
-      this.padding = const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      Key? key})
-      : super(key: key);
-  final Color? color;
-  final Widget? child;
-  final Function? onPressed;
-  final double borderRadius;
-  final EdgeInsetsGeometry padding;
-
-  @override
-  Widget build(BuildContext context) {
-    ThemeData currentTheme = Theme.of(context);
-    return FilledButton(
-      style: FilledButton.styleFrom(
-          padding: padding,
-          shadowColor: Color(0x000000),
-          backgroundColor: color ?? currentTheme.primaryColor,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(borderRadius)),
-          side: BorderSide(
-            color: Colors.black,
-          )),
-      onPressed: onPressed as void Function()?,
-      child: child,
-    );
-  }
-}
-
-class InputField extends StatelessWidget {
-  final Function(String)? onChanged;
-  final Function(String)? onSubmitted;
-  final TextInputType? keyboardType;
-  final TextInputAction? textInputAction;
-  final bool autoFocus;
-  final String? errorText;
-  final bool obscureText;
-  const InputField(
-      {this.onChanged,
-      this.onSubmitted,
-      this.errorText,
-      this.keyboardType,
-      this.textInputAction,
-      this.autoFocus = false,
-      this.obscureText = false,
-      Key? key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      autofocus: autoFocus,
-      onChanged: onChanged,
-      onSubmitted: onSubmitted,
-      keyboardType: keyboardType,
-      textInputAction: textInputAction,
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        border: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(50), // Always use borderRadius of 50
-        ),
-        errorText: errorText,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF78BC3F)),
-        ),
-
-        focusedBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(color: Colors.blue), // Change border color here
-        ),
-
-        isDense: true, // To make the content centered
       ),
     );
   }
