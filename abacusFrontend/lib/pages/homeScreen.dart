@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import '../components/app_bar.dart';
 
 void main() => runApp(const HomeScreen());
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,94 +15,90 @@ class HomeScreen extends StatelessWidget {
 }
 
 class AppBarExample extends StatelessWidget {
-  const AppBarExample({super.key});
+  const AppBarExample({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final ButtonStyle style = TextButton.styleFrom(
-      foregroundColor: Color(0xFF78BC3F),
+    TextButton firstButton = TextButton(
+      style: TextButton.styleFrom(
+        primary: const Color(0xFF78BC3F), // Use primary for text color
+      ),
+      onPressed: () {},
+      child: const Icon(Icons.search),
     );
 
-    final double buttonWidth =
-        MediaQuery.of(context).size.width * 0.8; // Adjust the factor as needed
+    TextButton secondButton = TextButton(
+      style: TextButton.styleFrom(
+        primary: const Color(0xFF78BC3F), // Use primary for text color
+      ),
+      onPressed: () {},
+      child: const Icon(Icons.settings),
+    );
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            TextButton(
-              style: style,
-              onPressed: () {},
-              child: const Icon(
-                Icons.search,
-                color: Color(0xFF78BC3F),
-              ),
-            ),
-            Text('Home', style: TextStyle(color: Colors.black)),
-            TextButton(
-              style: style,
-              onPressed: () {},
-              child: const Icon(Icons.settings, color: Color(0xFF78BC3F)),
-            ),
-          ],
-        ),
+      appBar: CustomAppBar(
+        title: 'Home',
+        firstButton: firstButton,
+        secondButton: secondButton,
       ),
       body: Align(
         alignment: Alignment.bottomCenter,
-        child: Container(
-          margin: EdgeInsets.symmetric(vertical: 50.0, horizontal: 2),
-          width: buttonWidth,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SimpleElevatedButton(
-                onPressed: () {},
-                child: Text('Join Run'),
-              ),
-              SimpleElevatedButton(
-                onPressed: () {},
-                child: Text('Create Run'),
-              ),
-            ],
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            width: double.infinity, // Use maximum width
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color(0xFF78BC3F),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: BorderSide(
+                          color: const Color(0xFF386641), // Set border color
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 13), // Increase button height
+                    ),
+                    onPressed: () {},
+                    child: Text(
+                      'Join Run',
+                      style:
+                          TextStyle(fontSize: 20, fontStyle: FontStyle.normal),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 20), // Add spacing between buttons
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: const Color(0xFF78BC3F),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: BorderSide(
+                          color: const Color(0xFF386641), // Set border color
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 13), // Increase button height
+                    ),
+                    onPressed: () {},
+                    child: Text(
+                      'Create Run',
+                      style:
+                          TextStyle(fontSize: 20, fontStyle: FontStyle.normal),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-}
-
-class SimpleElevatedButton extends StatelessWidget {
-  const SimpleElevatedButton(
-      {this.child,
-      this.color,
-      this.onPressed,
-      this.borderRadius = 30,
-      this.padding = const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-      Key? key})
-      : super(key: key);
-  final Color? color;
-  final Widget? child;
-  final Function? onPressed;
-  final double borderRadius;
-  final EdgeInsetsGeometry padding;
-
-  @override
-  Widget build(BuildContext context) {
-    ThemeData currentTheme = Theme.of(context);
-    return FilledButton(
-      style: FilledButton.styleFrom(
-          padding: padding,
-          shadowColor: Color(0x000000),
-          backgroundColor: color ?? Color(0xFF78BC3F),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(borderRadius)),
-          side: BorderSide(
-            color: Color(0xFF78BC3F),
-          )),
-      onPressed: onPressed as void Function()?,
-      child: child,
     );
   }
 }
