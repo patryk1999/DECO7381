@@ -1,4 +1,5 @@
 // ignore: file_names
+import 'package:abacusfrontend/pages/signUpScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:abacusfrontend/components/input_field.dart';
 import '../components/simple_elevated_button.dart';
@@ -144,7 +145,13 @@ class _LoginScreenState extends State<LoginScreen> {
               Align(
                 alignment: Alignment.center,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignUpScreen()),
+                    );
+                  },
                   child: const Text(
                     'Create a new user',
                     style: TextStyle(
