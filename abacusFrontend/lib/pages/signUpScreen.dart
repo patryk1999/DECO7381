@@ -249,7 +249,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           )
                     ),
-                    SizedBox(height: screenHeight*.08),
+                    SizedBox(height: screenHeight*.06),
                     Center(
                       child: SizedBox(
                         width: 220,
