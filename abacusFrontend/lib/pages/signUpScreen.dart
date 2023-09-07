@@ -1,149 +1,287 @@
 import 'package:flutter/material.dart';
+import 'package:abacusfrontend/components/input_field.dart';
+import '../components/simple_elevated_button.dart';
 
 
 
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
-
-  // This widget is the root of your application.
+class SignUpScreen extends StatefulWidget {
+  final Function(String? firstname, String? lastname, String? usersame, String? email, String? password)? onSubmitted;
+  const SignUpScreen({this.onSubmitted, Key? key}) : super(key: key);
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Create User',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-        useMaterial3: true,
-      ),
-      home: const SignUpScreenPage(title: 'Create User'),
-    );
-  }
+  State<SignUpScreen> createState() => _SignUpScreenState();
+
 }
 
-class SignUpScreenPage extends StatefulWidget {
-  const SignUpScreenPage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<SignUpScreenPage> createState() => _SignUpScreenPageState();
-}
-
-class _SignUpScreenPageState extends State<SignUpScreenPage> {
-  // some variables
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-
+class _SignUpScreenState extends State<SignUpScreen> {
+  late String firstname, lastname, username, email, password;
+  String? firstnameError, lastnameError, usernameError, emailError, passwordError;
+  Function(String? firstname, String? lastname, String? username, String? email, String? password)? get onSubmitted =>
+      widget.onSubmitted;
   
+  @override
+  void initState() {
+    super.initState();
+    firstname = '';
+    lastname = '';
+    username = '';
+    email = '';
+    password = '';
+    firstnameError = null;
+    lastnameError = null;
+    usernameError = null;
+    emailError = null;
+    passwordError = null;
   }
+
+  void resetErrorText() {
+    setState(() {
+      firstnameError = null;
+      lastnameError = null;
+      usernameError = null;
+      emailError = null;
+      passwordError = null;
+    });
+  }
+  bool validate() {
+    resetErrorText();
+
+  bool isValid = true;
+  if(firstname.isEmpty) {
+    setState(() {
+      firstnameError = 'First name is invalid';
+    });
+    isValid = false;
+  }
+  if(lastname.isEmpty) {
+    setState(() {
+      lastnameError = 'Last name is invalid';
+    });
+    isValid = false;
+  }
+  if(username.isEmpty) {
+    setState(() {
+      usernameError = 'Username is invalid';
+    });
+    isValid = false;
+  }
+  if(email.isEmpty) {
+    setState(() {
+      emailError = 'Email is invalid';
+    });
+    isValid = false;
+  }
+  if(password.isEmpty) {
+    setState(() {
+      passwordError = 'Password is invalid';
+    });
+    isValid = false;
+  }
+  return isValid;
+  }
+
+  void submit() {
+    if (validate()) {
+      if (onSubmitted != null) {
+        onSubmitted!(firstname, lastname, username, email, password);
+      }
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-         
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Create User',
-                style:TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF78BC3F),
-              ),
-            ),
-           
+      
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter a search term',
-                ),
-              ),
-            ),
-             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter a search term',
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-                child: FilledButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF78BC3F)),
-                  ),
-                  onPressed: () {},
-                  child: const Text('Create User'
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 0),
+      
+          child: ListView(
+                shrinkWrap: true,
+                children: [
+                  SizedBox(height: screenHeight*.03),
+                  const Center(
+                      child: Text(
+                    'Create User',
+                    style: TextStyle(
+                      fontSize: 35,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF78BC3F),
+                    ),
+                  )),
+
+                  SizedBox(height: screenHeight*.02),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(30, 30, 30, 5),
+                    child: Text(
+                      'First Name',
+                       style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF386641),
+                        )
+                      ),
+                    ),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30) ,
+                        child: InputField(
+                          onChanged: (value) {
+                            setState(() {
+                              firstname = value;
+                          });
+                          },
+                          onSubmitted: (val) => submit(),
+                          errorText: firstnameError,
+                          textInputAction: TextInputAction.next,
+                          autoFocus: true,
+                          ),
+                          )
+                    ),
                     
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(30, 30, 30,5),
+                      child: Text(
+                        'Last Name',
+                         style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF386641),
+                        )
+                        ),
+                      ),
+                       Center(
+                       child:Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: InputField(
+                          onChanged: (value) {
+                            setState(() {
+                              lastname = value;
+                          });
+                          },
+                          onSubmitted: (val) => submit(),
+                          errorText: lastnameError,
+                          textInputAction: TextInputAction.next,
+                          autoFocus: true,
+                          ),
+                          )
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(30, 30, 30,5),
+                      child: Text(
+                        'Username',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF386641),
+                        )
+                        ),
+                      ),
+                       Center(
+                        child:Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: InputField(
+                          onChanged: (value) {
+                            setState(() {
+                              username = value;
+                          });
+                          },
+                          onSubmitted: (val) => submit(),
+                          errorText: usernameError,
+                          textInputAction: TextInputAction.next,
+                          autoFocus: true,
+                          ),
+                          )
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(30, 30, 30,5),
+                      child: Text(
+                        'Email',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF386641),
+                        )
+                        ),
+                      ),
+                       Center(
+                      child:Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: InputField(
+                          onChanged: (value) {
+                            setState(() {
+                              email = value;
+                          });
+                          },
+                          onSubmitted: (val) => submit(),
+                          errorText: emailError,
+                          textInputAction: TextInputAction.next,
+                          autoFocus: true,
+                          ),
+                          )
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(30, 30, 30,5),
+                      child: Text(
+                        'Password',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF386641),
+                        )
+                        ),
+                      ),
+                       Center(
+                      child:Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        child: InputField(
+                          onChanged: (value) {
+                            setState(() {
+                              password = value;
+                          });
+                          },
+                          onSubmitted: (val) => submit(),
+                          errorText: passwordError,
+                          keyboardType: TextInputType.name,
+                          textInputAction: TextInputAction.next,
+                          obscureText: true,
+                          autoFocus: true,
+                          ),
+                          )
+                    ),
+                    SizedBox(height: screenHeight*.08),
+                    Center(
+                      child: SizedBox(
+                        width: 220,
+                        height: 50,
+                        child: SimpleElevatedButton(
+                          color: const Color(0xFF78BC3F),
+                          onPressed: submit,
+                          child: const Text('Create User',
+                          style: TextStyle(fontSize: 20, fontStyle: FontStyle.normal),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Align(
+                alignment: Alignment.center,
+                child: TextButton(
+                  onPressed: () {
+                     Navigator.pop(context);
+                  },
+                  child: const Text(
+                    'Go to log in',
+                    style: TextStyle(
+                      color: Color(0xFF386641),
+                    ),
+                  ),
                 ),
-                )
               ),
-          ],
+            ],
+          ),
         ),
       ),
 // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-
 }
