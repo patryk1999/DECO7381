@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    
+
+
+    <user-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <user-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:label="abacusfrontend"
         android:name="${applicationName}"
@@ -29,5 +34,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBMrnXoh8ZyR-siIE_n4VhMae6ZIbUNHIQ" />
     </application>
 </manifest>
