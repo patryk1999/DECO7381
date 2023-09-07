@@ -31,8 +31,7 @@ def makeFriends(request):
 
     return HttpResponse(status=200)
 
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
+
 @csrf_exempt
 def makeUser(request):
     body_unicode = request.body.decode('utf-8')
@@ -48,22 +47,22 @@ def makeUser(request):
 @permission_classes([IsAuthenticated])
 @csrf_exempt
 def getFriends(request):
-
+    #Get userID from the token
     user_id = request.headers['Authorization']
     token = AccessToken(user_id.split(' ')[1])
     user_id = token.payload['user_id']
+    #Get the list of friends based on userIDs and add them to a list
     friends = Friendship.objects.filter(Q(user1_id = user_id) | Q(user2_id = user_id))
     list_of_friends = []
     for friend in friends:
         list_of_friends.append({friend.user1_id})
         list_of_friends.append({friend.user2_id})
-    print(list_of_friends)
+    #Make a list with usernames instead of userIds
     list_of_usernames = []
     for friend in list_of_friends:
         friend_obj = User.objects.get(id=list(friend)[0])
         list_of_usernames.append(friend_obj.username)
-
+    # Remove redundant usernames
     list_of_usernames = list(set(list_of_usernames))
     list_of_usernames.remove(User.objects.get(id=user_id).username)
-    print(list_of_usernames)
     return JsonResponse(list_of_usernames,safe=False, status=200)
