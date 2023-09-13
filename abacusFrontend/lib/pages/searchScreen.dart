@@ -1,20 +1,8 @@
-// ignore_for_file: avoid_print
-
-import 'package:abacusfrontend/main.dart';
 import 'package:flutter/material.dart';
-import 'package:abacusfrontend/pages/searchScreen.dart';
 
-class Friend implements Comparable<Friend> {
-  final String name, surname, email;
-
-  const Friend(this.name, this.surname, this.email)
-
-  @override
-  int compareTo(Friend other) => name.compareTo(other.name);
-
+void main() {
+  runApp(const MyApp());
 }
-
-void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -22,30 +10,65 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: SearchScreen());
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        textTheme: const TextTheme(
+            // bodyText2: TextStyle(color: Colors.red, fontWeight: FontWeight.w900),
+            ),
+      ),
+      home: const MyHomePage(title: 'Flutter Demo'),
+    );
   }
 }
 
-
-class SearchScreen extends StatelessWidget {
-
-  static const people = [
-    Friend('Thea', 'Salvesen', 'thea@mail.com'),
-    Friend('Tord', 'Gunnarsli', 'tord@mail.com'),
-    Friend('Elin', 'Bartnes', 'elin@mail.com'),
-    Friend('Emilie', 'Frohaug', 'emmi@mail.com'),
-  ];
-
-  const SearchScreen({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+  final String title;
 
   @override
-  State<SearchScreen> createState => _SearchScreenState();
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
-  class _SearchScreenState extends State<SearchScreen> {
+class _MyHomePageState extends State<MyHomePage> {
+  // This controller will store the value of the search bar
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('flutterassets.com'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          // Add padding around the search bar
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          // Use a Material design search bar
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Search...',
+              // Add a clear button to the search bar
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () => _searchController.clear(),
+              ),
+              // Add a search icon or button to the search bar
+              prefixIcon: IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  // Perform the search here
+                },
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
-}
 }
