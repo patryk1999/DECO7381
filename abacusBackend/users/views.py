@@ -1,10 +1,13 @@
 import json
-from django.http import HttpResponse
-from rest_framework.decorators import api_view, permission_classes
+from django.http import HttpResponse, JsonResponse
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from users.models import Friendship
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import AccessToken
+from django.db.models import Q
 
 # Create your views here.
 
@@ -16,9 +19,6 @@ def test(request):
 #@permission_classes([IsAuthenticated])
 @csrf_exempt
 def makeFriends(request):
-    # username_1 = request[username_1]
-    # username_2 = request[username_2]
-
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     username_1 = body['username_1']
@@ -29,4 +29,40 @@ def makeFriends(request):
     f = Friendship(user1 = user_1, user2 = user_2)
     f.save()
 
-    return HttpResponse("I am Ok")
+    return HttpResponse(status=200)
+
+
+@csrf_exempt
+def makeUser(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    new_username = body['username']
+    new_email = body['email']
+    new_password = body['password']
+    user = User.objects.create_user(username=new_username, email=new_email, password=new_password)
+    user.save()
+    return HttpResponse(status=200)
+
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+@csrf_exempt
+def getFriends(request):
+    #Get userID from the token
+    user_id = request.headers['Authorization']
+    token = AccessToken(user_id.split(' ')[1])
+    user_id = token.payload['user_id']
+    #Get the list of friends based on userIDs and add them to a list
+    friends = Friendship.objects.filter(Q(user1_id = user_id) | Q(user2_id = user_id))
+    list_of_friends = []
+    for friend in friends:
+        list_of_friends.append({friend.user1_id})
+        list_of_friends.append({friend.user2_id})
+    #Make a list with usernames instead of userIds
+    list_of_usernames = []
+    for friend in list_of_friends:
+        friend_obj = User.objects.get(id=list(friend)[0])
+        list_of_usernames.append(friend_obj.username)
+    # Remove redundant usernames
+    list_of_usernames = list(set(list_of_usernames))
+    list_of_usernames.remove(User.objects.get(id=user_id).username)
+    return JsonResponse(list_of_usernames,safe=False, status=200)

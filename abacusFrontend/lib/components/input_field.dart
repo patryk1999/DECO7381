@@ -9,7 +9,7 @@ class InputField extends StatelessWidget {
   final String? errorText;
   final bool obscureText;
   const InputField(
-      {this.onChanged,
+      {this.onChanged, 
       this.onSubmitted,
       this.errorText,
       this.keyboardType,
@@ -31,7 +31,7 @@ class InputField extends StatelessWidget {
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius:
-              BorderRadius.circular(50), // Always use borderRadius of 50
+              BorderRadius.circular(5), // Always use borderRadius of 50
         ),
         errorText: errorText,
         floatingLabelBehavior: FloatingLabelBehavior.always,
