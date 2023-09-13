@@ -1,36 +1,12 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({Key? key}) : super(key: key);
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        textTheme: const TextTheme(
-            // bodyText2: TextStyle(color: Colors.red, fontWeight: FontWeight.w900),
-            ),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo'),
-    );
-  }
+  SearchScreenState createState() => SearchScreenState();
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class SearchScreenState extends State<SearchScreen> {
   // This controller will store the value of the search bar
   final TextEditingController _searchController = TextEditingController();
 
@@ -38,7 +14,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('flutterassets.com'),
+        title: const Text('Run with Friends'),
+        centerTitle: true,
+        backgroundColor: Colors.green,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -72,3 +50,39 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+// class CustomSearchDelegate extends SearchDelegate {
+//   List<String> searchTerms = [
+//     "Elin Bartnes",
+//     "Emilie Skirdal Frøhaug",
+//     "Selma Gudmundsen",
+//     "Thea Sofie Salvesen",
+//     "Patryk Kuklinski",
+//     "Tord Skajaa Gunnarsli"
+//   ];
+
+//   // first overwrite to
+//   // clear the search text
+//   @override
+//   List<Widget>? buildActions(BuildContext context) {
+//     return [
+//       IconButton(
+//         onPressed: () {
+//           query = '';
+//         },
+//         icon: const Icon(Icons.clear),
+//       ),
+//     ];
+//   }
+
+//   // second overwrite to pop out of search menu
+//   @override
+//   Widget? buildLeading(BuildContext context) {
+//     return IconButton(
+//       onPressed: () {
+//         close(context, null);
+//       },
+//       icon: const Icon(Icons.arrow_back),
+//     );
+//   }
+// }
