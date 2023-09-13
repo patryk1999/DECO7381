@@ -21,7 +21,7 @@ class AppBarExample extends StatelessWidget {
   Widget build(BuildContext context) {
     TextButton firstButton = TextButton(
       style: TextButton.styleFrom(
-        primary: const Color(0xFF78BC3F), // Use primary for text color
+        primary: const Color(0xFF78BC3F),
       ),
       onPressed: () {},
       child: const Icon(Icons.search),
@@ -29,7 +29,7 @@ class AppBarExample extends StatelessWidget {
 
     TextButton secondButton = TextButton(
       style: TextButton.styleFrom(
-        primary: const Color(0xFF78BC3F), // Use primary for text color
+        primary: const Color(0xFF78BC3F),
       ),
       onPressed: () {},
       child: const Icon(Icons.settings),
@@ -52,8 +52,8 @@ class AppBarExample extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF78BC3F), // Sporty green color
-                  letterSpacing: 1.2, // Increased spacing for sporty look
+                  color: Color(0xFF78BC3F),
+                  letterSpacing: 1.2,
                 ),
               ),
             ),
@@ -66,7 +66,7 @@ class AppBarExample extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  width: double.infinity, // Use maximum width
+                  width: double.infinity,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -77,12 +77,10 @@ class AppBarExample extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                               side: BorderSide(
-                                color:
-                                    const Color(0xFF386641), // Set border color
+                                color: const Color(0xFF386641),
                               ),
                             ),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 13), // Increase button height
+                            padding: EdgeInsets.symmetric(vertical: 13),
                           ),
                           onPressed: () {},
                           child: Text(
@@ -92,7 +90,7 @@ class AppBarExample extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(width: 20), // Add spacing between buttons
+                      SizedBox(width: 20),
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -100,12 +98,10 @@ class AppBarExample extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                               side: BorderSide(
-                                color:
-                                    const Color(0xFF386641), // Set border color
+                                color: const Color(0xFF386641),
                               ),
                             ),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 13), // Increase button height
+                            padding: EdgeInsets.symmetric(vertical: 13),
                           ),
                           onPressed: () {},
                           child: Text(
