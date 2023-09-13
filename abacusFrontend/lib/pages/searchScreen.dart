@@ -41,8 +41,8 @@ class SearchScreenState extends State<SearchScreen> {
                 },
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
+                  borderRadius: BorderRadius.circular(50),
+                  borderSide: const BorderSide(color: Colors.green)),
             ),
           ),
         ),
