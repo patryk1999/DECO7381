@@ -103,12 +103,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       if(respons.statusCode == 200) {
         print('User created');
+        _navigateToNewPage();
        // Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()),);
       } else {
-        print('User not created ${jsonData} ${respons.request}');
+        print('User not created ${respons.request}');
       }
       
     }
+  }
+    void _navigateToNewPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+    ));
   }
 
 
