@@ -5,20 +5,29 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken
-from run.models import Run
+from run.models import Run, Location
 from django.contrib.auth.models import User
 
 @permission_classes([IsAuthenticated])
 @csrf_exempt
 def addRun(request):
-    print("LMAO WHY NOT WORK")
     startTime= request.GET.get('startTime')
-    print("starttime not work")
     userId = request.headers['Authorization']
     token = AccessToken(userId.split(' ')[1])
     userId = token.payload['user_id']
     owner = User.objects.get(id=userId)
     r = Run(user=owner, startTime = startTime)
     r.save()
-    return HttpResponse()
+    return HttpResponse(status=200)
 
+
+@permission_classes([IsAuthenticated])
+@csrf_exempt
+def addLocation(request):
+    latitude = request.GET.get('latitude')
+    longitude = request.GET.get('longitude')
+    runID = request.GET.get('runID')
+    runObj = Run.objects.get(pk=runID)
+    l = Location(runId = runObj,latitude=latitude, longitude=longitude)
+    l.save()
+    return HttpResponse(status=200)
