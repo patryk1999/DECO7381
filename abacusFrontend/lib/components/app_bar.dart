@@ -4,13 +4,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final Function()? onPressed;
   final TextButton firstButton;
-  final TextButton secondButton;
+  final TextButton? secondButton;
 
   const CustomAppBar({
     required this.title,
     this.onPressed,
     required this.firstButton,
-    required this.secondButton,
+    this.secondButton,
     Key? key,
   }) : super(key: key);
 
