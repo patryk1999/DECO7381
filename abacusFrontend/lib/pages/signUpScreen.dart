@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:abacusfrontend/pages/loginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:abacusfrontend/components/input_field.dart';
 import '../components/simple_elevated_button.dart';
+import 'package:http/http.dart' as http;
 
 
 
@@ -79,12 +83,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
   return isValid;
   }
 
-  void submit() {
+  void submit()  async{
     if (validate()) {
       if (onSubmitted != null) {
         onSubmitted!(firstname, lastname, username, email, password);
       }
+      final url = Uri.parse('http://127.0.0.1:8000/users/newUser/');
+      final userData = {
+        'firstname': firstname,
+        'lastname': lastname, 
+        'username': username, 
+        'email': email, 
+        'password': password
+        };
+      final jsonData = jsonEncode(userData);
+      final headers = <String, String>{'Content-Type': 'application/json'};
+
+      final respons = await http.post(url,body: jsonData, headers: headers);
+
+      if(respons.statusCode == 200) {
+        print('User created');
+        _navigateToNewPage();
+       // Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()),);
+      } else {
+        print('User not created ${respons.request}');
+      }
+      
     }
+  }
+    void _navigateToNewPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+    ));
   }
 
 
