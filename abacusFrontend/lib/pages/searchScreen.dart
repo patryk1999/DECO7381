@@ -44,6 +44,16 @@ class SearchScreenState extends State<SearchScreen> {
         initials: 'PK'),
   ];
 
+  List<String> items = []; // Empty at start
+
+  // void filterSearchResults(String query) {
+  //   setState(() {
+  //     items = friends
+  //         .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+  //         .toList();
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
