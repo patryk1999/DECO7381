@@ -1,4 +1,5 @@
 // ignore: file_names
+import 'package:abacusfrontend/pages/homeScreen.dart';
 import 'package:abacusfrontend/pages/signUpScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:abacusfrontend/components/input_field.dart';
@@ -129,26 +130,37 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               SizedBox(height: screenHeight * .05),
-              Center(
-                  child: SizedBox(
-                width: 200,
-                height: 50,
-                child: SimpleElevatedButton(
-                  color: const Color(0xFF78BC3F),
-                  onPressed: submit,
-                  child: const Text(
-                    'Log In',
-                    style: TextStyle(fontSize: 20, fontStyle: FontStyle.normal),
+              Align(
+                alignment: Alignment.center,
+                child: Center(
+                    child: SizedBox(
+                  width: 200,
+                  height: 50,
+                  child: SimpleElevatedButton(
+                    color: const Color(0xFF78BC3F),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()),
+                      );
+                    },
+                    child: const Text(
+                      'Log In',
+                      style:
+                          TextStyle(fontSize: 20, fontStyle: FontStyle.normal),
+                    ),
                   ),
-                ),
-              )),
+                )),
+              ),
               Align(
                 alignment: Alignment.center,
                 child: TextButton(
                   onPressed: () {
                     Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignUpScreen()),
                     );
                   },
                   child: const Text(
