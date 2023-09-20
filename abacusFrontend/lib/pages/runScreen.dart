@@ -11,7 +11,7 @@ class RunScreen extends StatefulWidget {
 
 class _RunScreenState extends State<RunScreen> {
   late GoogleMapController mapController;
-  late Position? _previousPosition;
+  late Position? _previousPosition = null;
   late Position currentPosition;
   late double _totalDistance = 0;
   late bool servicePermission = false;
@@ -20,6 +20,8 @@ class _RunScreenState extends State<RunScreen> {
   int _seconds = 0;
   int _minutes = 0;
   int _hours = 0;
+  double _frozenDistance = 0;
+  String _frozenPace = '0.00 km/h';
   bool _isTimerPaused = true;
 
   @override
@@ -39,22 +41,24 @@ class _RunScreenState extends State<RunScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
+    Geolocator.getPositionStream().listen((position) {
+      if (_previousPosition != null) {
+        final distance = Geolocator.distanceBetween(
+          _previousPosition!.latitude,
+          _previousPosition!.longitude,
+          position.latitude,
+          position.longitude,
+        );
 
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    if (_previousPosition != null) {
-      final distance = Geolocator.distanceBetween(
-        _previousPosition!.latitude,
-        _previousPosition!.longitude,
-        position.latitude,
-        position.longitude,
-      );
-      _totalDistance += distance;
-    }
-    setState(() {
-      currentPosition = position;
-      _previousPosition = position;
+        setState(() {
+          _totalDistance += distance;
+        });
+      }
+
+      setState(() {
+        currentPosition = position;
+        _previousPosition = position;
+      });
     });
   }
 
@@ -62,6 +66,8 @@ class _RunScreenState extends State<RunScreen> {
     if (_timer != null && !_isTimerPaused) {
       _timer.cancel();
       _isTimerPaused = true;
+      _frozenDistance = _totalDistance;
+      _frozenPace = _calculatePace();
     }
   }
 
@@ -70,15 +76,31 @@ class _RunScreenState extends State<RunScreen> {
       final double kilometers = _totalDistance / 1000;
       final double hours = _hours + _minutes / 60 + _seconds / 3600;
       final double pace = hours > 0 ? kilometers / hours : 0;
-      return pace.toStringAsFixed(2) + ' km/h'; // Format pace as "X.XX km/h"
+      return '${pace.toStringAsFixed(2)} km/h';
     } else {
       return '0.00 km/h';
     }
   }
 
+  void _finishRun() {
+    //To navigate to the summary page
+    /*
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => const SummaryScreen(
+              distane: _totalDistance,
+              hours: _hours,
+              minutes: _minutes,
+              seconds: _seconds,
+              pace: _)),
+    );*/
+  }
+
   void _startTimer() {
     if (_isTimerPaused) {
-      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _totalDistance = _frozenDistance;
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
           _seconds++;
           if (_seconds == 60) {
@@ -113,9 +135,7 @@ class _RunScreenState extends State<RunScreen> {
               Icons.settings,
               color: Color(0xFF78BC3F),
             ),
-            onPressed: () {
-              // Add your settings button action here
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -182,7 +202,7 @@ class _RunScreenState extends State<RunScreen> {
               ),
             ],
           ),
-          // Second row
+
           Row(
             children: [
               Expanded(
@@ -210,27 +230,32 @@ class _RunScreenState extends State<RunScreen> {
                         style: TextStyle(fontSize: 18),
                       ),
                       Text(
-                        '${_hours.toString().padLeft(2, '0')}:${_minutes.toString().padLeft(2, '0')}:${_seconds.toString().padLeft(2, '0')}',
-                        style: TextStyle(fontSize: 34),
+                        _isTimerPaused
+                            ? '${(_frozenDistance / 1000).toStringAsFixed(2)} km'
+                            : '${(_totalDistance / 1000).toStringAsFixed(2)} km',
+                        style: const TextStyle(fontSize: 34),
                       ),
                       const Text(
                         "Distance",
                         style: TextStyle(fontSize: 18),
                       ),
                       Text(
-                        '${(_totalDistance / 1000).toStringAsFixed(2)} km', // Convert to kilometers and format
-                        style: TextStyle(fontSize: 34),
+                        '${(_totalDistance).toStringAsFixed(2)} km',
+                        style: const TextStyle(fontSize: 34),
                       ),
                       const Text(
                         "Average Pace",
                         style: TextStyle(fontSize: 18),
                       ),
                       Text(
-                        _calculatePace(), // Convert to kilometers and format
-                        style: TextStyle(fontSize: 34),
+                        _isTimerPaused ? _frozenPace : _calculatePace(),
+                        style: const TextStyle(fontSize: 34),
                       ),
                       Row(children: [
-                        SizedBox(width: 30),
+                        const SizedBox(
+                          width: 30,
+                          height: 100,
+                        ),
                         Container(
                           width: 70,
                           height: 70,
@@ -252,15 +277,15 @@ class _RunScreenState extends State<RunScreen> {
                                   }
                                 },
                                 child: _isTimerPaused
-                                    ? Icon(Icons.play_arrow,
+                                    ? const Icon(Icons.play_arrow,
                                         size: 30, color: Colors.white)
-                                    : Icon(Icons.pause,
+                                    : const Icon(Icons.pause,
                                         size: 30, color: Colors.white),
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         Container(
                           width: 70,
                           height: 70,
@@ -268,16 +293,28 @@ class _RunScreenState extends State<RunScreen> {
                             shape: BoxShape.circle,
                             color: Color(0xFF78BC3F),
                           ),
-                          child: const Center(
-                            child: Text(
-                              "FINISH",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
+                          child: Center(
+                            child: Container(
+                              width: 60,
+                              height: 60,
+                              child: RawMaterialButton(
+                                shape: const CircleBorder(),
+                                onPressed: () {
+                                  _finishRun();
+                                },
+                                child: const Center(
+                                  child: Text(
+                                    "FINISH",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ])
                     ],
                   ),
@@ -310,7 +347,7 @@ class _RunScreenState extends State<RunScreen> {
                         style: TextStyle(fontSize: 18),
                       ),
                       const Text("9.56 km/t", style: TextStyle(fontSize: 34)),
-                      SizedBox(width: 70, height: 70)
+                      const SizedBox(width: 70, height: 100)
                     ],
                   ),
                 ),
