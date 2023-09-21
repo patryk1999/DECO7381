@@ -24,23 +24,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              primary: const Color(0xFF78BC3F), // Use primary for text color
-            ),
-            onPressed: () {},
-            child: const Icon(
-              Icons.search,
-            ),
-          ),
+          firstButton,
           Text(title, style: TextStyle(color: Colors.black)),
-          TextButton(
-            style: TextButton.styleFrom(
-              primary: const Color(0xFF78BC3F), // Use primary for text color
-            ),
-            onPressed: () {},
-            child: const Icon(Icons.settings),
-          ),
+          secondButton ??
+              Opacity(
+                opacity: 0.0,
+                child: TextButton(
+                  onPressed:
+                      () {}, // empty onPressed so the button is "inactive"
+                  child:
+                      Text('texting'), // A placeholder text, it'll be invisible
+                ),
+              ),
         ],
       ),
     );
