@@ -20,7 +20,6 @@ def addRun(request):
     r.save()
     return HttpResponse(status=200)
 
-
 @permission_classes([IsAuthenticated])
 @csrf_exempt
 def addLocation(request):
@@ -31,3 +30,21 @@ def addLocation(request):
     l = Location(runId = runObj,latitude=latitude, longitude=longitude)
     l.save()
     return HttpResponse(status=200)
+
+@permission_classes([IsAuthenticated])
+@csrf_exempt
+def getHistory(request):
+    userId = request.headers['Authorization']
+    token = AccessToken(userId.split(' ')[1])
+    userId = token.payload['user_id']
+    history = Run.objects.filter(user=userId)
+   # print(history)
+    historyDict = {}
+    for run in history:
+       attributeArray = {}
+       attributeArray['startTime'] = run.startTime.strftime("%Y-%m-%d %H:%M:%S")
+       attributeArray['endTime'] = run.endTime.strftime("%Y-%m-%d %H:%M:%S")
+       attributeArray['avgPace'] = run.avgPace
+       historyDict[run.created_at.strftime("%Y-%m-%d %H:%M:%S")] = attributeArray
+    print(historyDict)
+    return HttpResponse(historyDict)
