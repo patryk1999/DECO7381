@@ -42,7 +42,7 @@ class AppBarExample extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(30.0, 16.0, 16.0, 30.0),
             // ignore: prefer_const_constructors
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   "Your Run",
@@ -57,15 +57,13 @@ class AppBarExample extends StatelessWidget {
                 SizedBox(height: 20), // Space between the texts
                 Text(
                   "Time", // Your additional text
-                  textAlign: TextAlign.start,
                   style: TextStyle(
                     fontSize: 12,
                     color: Color(0xFF386641),
                   ),
                 ),
                 Text(
-                  "00:06:45", // Your additional text
-                  textAlign: TextAlign.center,
+                  "00:06:45",
                   style: TextStyle(
                     fontSize: 30,
                     color: Color(0xFF000000),
@@ -88,7 +86,7 @@ class AppBarExample extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Distance", // Your additional text
+                              "Distance",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                 fontSize: 12,
@@ -103,6 +101,12 @@ class AppBarExample extends StatelessWidget {
                                 color: Color(0xFF000000),
                                 fontWeight: FontWeight.w300,
                               ),
+                            ),
+                            Divider(
+                              color: Color(0xFF78BC3F),
+                              thickness: 1,
+                              indent: 0,
+                              endIndent: 30,
                             ),
                           ],
                         ),
@@ -127,6 +131,12 @@ class AppBarExample extends StatelessWidget {
                                 color: Color(0xFF000000),
                                 fontWeight: FontWeight.w300,
                               ),
+                            ),
+                            Divider(
+                              color: Color(0xFF78BC3F),
+                              thickness: 1,
+                              indent: 0,
+                              endIndent: 20,
                             ),
                           ],
                         ),
@@ -155,16 +165,18 @@ class AppBarExample extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20), // Space between the texts
-                Text(
-                  "You’re getting there",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF386641),
-                    letterSpacing: 1.2,
-                  ),
-                ),
+                Container(
+                    width: 150,
+                    child: Text(
+                      "You’re getting there",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF386641),
+                        letterSpacing: 1.2,
+                      ),
+                    )),
                 Divider(
                   color: Color(0xFF78BC3F),
                   thickness: 1,
@@ -174,7 +186,7 @@ class AppBarExample extends StatelessWidget {
                 SizedBox(height: 20), // Space between the texts
                 Text(
                   "Runner 1", // Your additional text
-                  textAlign: TextAlign.start,
+                  textAlign: TextAlign.right,
                   style: TextStyle(
                     fontSize: 12,
                     color: Color(0xFF386641),
