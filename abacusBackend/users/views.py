@@ -11,12 +11,8 @@ from django.db.models import Q
 
 # Create your views here.
 
-#@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def test(request):
-    return HttpResponse("I am Ok")
 
-#@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 @csrf_exempt
 def makeFriends(request):
     body_unicode = request.body.decode('utf-8')
@@ -30,6 +26,18 @@ def makeFriends(request):
     f.save()
 
     return HttpResponse(status=200)
+
+@permission_classes([IsAuthenticated])
+@csrf_exempt
+def getAllUsers(request):
+ 
+    listOfUsers = {}
+    allUsers = User.objects.all()
+    for user in allUsers:
+        listOfUsers[user.id] = user.username 
+    
+    print(listOfUsers)
+    return JsonResponse(listOfUsers)
 
 
 @csrf_exempt
