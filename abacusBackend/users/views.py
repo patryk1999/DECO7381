@@ -48,7 +48,9 @@ def makeUser(request):
     new_username = body['username']
     new_email = body['email']
     new_password = body['password']
-    user = User.objects.create_user(username=new_username, email=new_email, password=new_password)
+    new_firstname = body['firstname']
+    new_lastname = body['lastname']
+    user = User.objects.create_user(username=new_username, email=new_email, password=new_password, last_name = new_lastname, first_name = new_firstname)
     user.save()
     return HttpResponse(status=200)
 
