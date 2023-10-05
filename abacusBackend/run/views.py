@@ -8,6 +8,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 from run.models import Run, Location
 from django.contrib.auth.models import User
 
+
+#Adding concurrent run is still not working
 @permission_classes([IsAuthenticated])
 @csrf_exempt
 def addRun(request):
@@ -16,7 +18,20 @@ def addRun(request):
     token = AccessToken(userId.split(' ')[1])
     userId = token.payload['user_id']
     owner = User.objects.get(id=userId)
-    r = Run(user=owner, startTime = startTime)
+    endTime = request.GET.get('endTime')
+    avgPace = request.GET.get('avgPace')
+    r = Run(user=owner, startTime = startTime, endTime = endTime, avgPace = avgPace)
+    r.save()
+    return HttpResponse(r.id, status=200)
+
+
+@permission_classes([IsAuthenticated])
+@csrf_exempt
+def updateConcurrentRun(request):
+    concurrentRun = request.GET.get('concurrentRun')
+    runToUpdate = request.GET.get('runToUpdate')
+    r = Run.objects.get(id=runToUpdate)
+    r.concurrentRun = concurrentRun 
     r.save()
     return HttpResponse(status=200)
 
