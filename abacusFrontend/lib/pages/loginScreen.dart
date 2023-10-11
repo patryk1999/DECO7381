@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _navigateToNewPage();
       } else {
         setState(() {
-          loginError = 'The user does not exist or the password is incorrect';
+          loginError = 'The user doesn\'t exist or the password is incorrect';
         });
       }
     }
@@ -198,13 +198,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               if (loginError != null)
-                Padding(
+                Center(
+                  child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     loginError!,
                     style: const TextStyle(color: Colors.red),
                   ),
                 ),
+              ),
             ],
           ),
         ),
