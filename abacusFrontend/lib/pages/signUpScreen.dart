@@ -18,7 +18,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   late String firstname, lastname, username, email, password;
-  String? firstnameError, lastnameError, usernameError, emailError, passwordError;
+  String? firstnameError, lastnameError, usernameError, emailError, passwordError,signUpError;
   Function(String? firstname, String? lastname, String? username, String? email, String? password)? get onSubmitted =>
       widget.onSubmitted;
   
@@ -35,6 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     usernameError = null;
     emailError = null;
     passwordError = null;
+    signUpError = null;
   }
 
   void resetErrorText() {
@@ -44,6 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       usernameError = null;
       emailError = null;
       passwordError = null;
+      signUpError = null;
     });
   }
   bool validate() {
@@ -102,11 +104,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       final respons = await http.post(url,body: jsonData, headers: headers);
 
       if(respons.statusCode == 200) {
-        print('User created');
         _navigateToNewPage();
-       // Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()),);
       } else {
-        print('User not created ${respons.request}');
+        setState((){
+          signUpError = 'Username already exists';
+        });
       }
       
     }
@@ -126,10 +128,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-      
-
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 0),
       
@@ -309,11 +307,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
               ),
+              if (signUpError != null)
+                Center(
+                  child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    signUpError!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
-// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
