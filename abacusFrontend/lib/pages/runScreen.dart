@@ -254,7 +254,7 @@ class _RunScreenState extends State<RunScreen> {
                       Row(children: [
                         const SizedBox(
                           width: 30,
-                          height: 100,
+                          height: 80,
                         ),
                         Container(
                           width: 70,
@@ -265,8 +265,8 @@ class _RunScreenState extends State<RunScreen> {
                           ),
                           child: Center(
                             child: Container(
-                              width: 30,
-                              height: 30,
+                              width: 70,
+                              height: 70,
                               child: RawMaterialButton(
                                 shape: const CircleBorder(),
                                 onPressed: () {
@@ -347,7 +347,9 @@ class _RunScreenState extends State<RunScreen> {
                         style: TextStyle(fontSize: 18),
                       ),
                       const Text("9.56 km/t", style: TextStyle(fontSize: 34)),
-                      const SizedBox(width: 70, height: 100)
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width / 2,
+                          height: 80)
                     ],
                   ),
                 ),
