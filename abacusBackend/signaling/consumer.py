@@ -14,7 +14,8 @@ class SignalingConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        pass  # Disconnect handling
+        print('disconnected')
+        pass 
 
     async def receive(self, text_data):
         print(self.groups)
@@ -34,31 +35,6 @@ class SignalingConsumer(AsyncWebsocketConsumer):
                 break
         await self.channel_layer.group_send(
             self.groups[index], message)
-        return
-        action = message['action']
-        if action == 'user':
-            print('user')
-            self.groups.append(message['username'])
-            print(self.groups)
-            # Handle SDP offer
-            await self.send(text_data=json.dumps({'action': 'answer', 'sdp': '...'}))
-        elif action == 'broadcast':
-            print('broadcast')
-            self.channel_layer.group_send(
-                self.groups[0],
-                {
-                    'type': 'send_message',
-                    'message': 'Hello there!',
-                }
-            )
-        elif action == 'answer':
-            # Handle SDP answer
-            pass  # Add handling code as needed
-        elif action == 'ice':
-            # Handle ICE candidate
-            pass  # Add handling code as needed
-    async def send_message(self, message):
-        await self.send(text_data=json.dumps(message))
     
    
        
