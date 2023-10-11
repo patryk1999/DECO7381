@@ -11,8 +11,8 @@ void main() => runApp(SearchScreen(
 
 class SearchScreen extends StatefulWidget {
   final String? accessToken;
-  final String username;
-  const SearchScreen({Key? key, this.accessToken, required this.username})
+  final String? username;
+  const SearchScreen({Key? key, this.accessToken, this.username})
       : super(key: key);
 
   @override
@@ -37,6 +37,7 @@ class _SearchScreenState extends State<SearchScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    fetchData();
     _tabController.addListener(_handleTabChange);
     loadController = AnimationController(
       vsync: this,
@@ -48,7 +49,6 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   void _handleTabChange() {
-    print("hei");
     if (_tabController.indexIsChanging) {
       if (_tabController.index == 0) {
         // Fetch data when the "Friends" tab is selected
@@ -64,7 +64,7 @@ class _SearchScreenState extends State<SearchScreen>
     final url = Uri.parse('http://127.0.0.1:8000/users/getFriends/');
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${widget.accessToken}',
+      'Authorization': 'Bearer ${LoginScreen.accesToken}',
     };
 
     final response = await http.get(url, headers: headers);
@@ -74,28 +74,30 @@ class _SearchScreenState extends State<SearchScreen>
       final List<User> fetchedUsers = [];
 
       responseData.forEach((userId, userData) {
-        final User user = User(
-          id: userId,
-          firstname: userData[0],
-          lastname: userData[1],
-          email: userData[2],
-          username: userData[3],
-        );
-        fetchedUsers.add(user);
+        if (userData[3] != LoginScreen.username) {
+          final User user = User(
+            id: userId,
+            firstname: userData[0],
+            lastname: userData[1],
+            email: userData[2],
+            username: userData[3],
+          );
+          fetchedUsers.add(user);
+        }
       });
 
       setState(() {
         friendsBackend = fetchedUsers;
         filteredFriends = fetchedUsers; // Display the fetched data initially
       });
-    } else {}
+    }
   }
 
   Future<void> fetchAllUsers() async {
     final url = Uri.parse('http://127.0.0.1:8000/users/getAllUsers/');
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${widget.accessToken}',
+      'Authorization': 'Bearer ${LoginScreen.accesToken}',
     };
 
     final response = await http.get(url, headers: headers);
@@ -105,14 +107,16 @@ class _SearchScreenState extends State<SearchScreen>
       final List<User> fetUsers = [];
 
       responseData.forEach((userId, userData) {
-        final User user = User(
-          id: userId,
-          firstname: userData[0],
-          lastname: userData[1],
-          email: userData[2],
-          username: userData[3],
-        );
-        fetUsers.add(user);
+        if (userData[3] != LoginScreen.username) {
+          final User user = User(
+            id: userId,
+            firstname: userData[0],
+            lastname: userData[1],
+            email: userData[2],
+            username: userData[3],
+          );
+          fetUsers.add(user);
+        }
       });
 
       setState(() {
@@ -162,7 +166,7 @@ class _SearchScreenState extends State<SearchScreen>
     });
   }
 
-  Future<void> addFriend(String username1, String username2) async {
+  Future<int> addFriend(String? username1) async {
     final url = Uri.parse('http://127.0.0.1:8000/users/makeFriend/');
     final headers = {
       'Content-Type': 'application/json',
@@ -171,19 +175,14 @@ class _SearchScreenState extends State<SearchScreen>
 
     final userData = {
       'username_1': username1,
-      'username_2': username2,
+      'username_2': LoginScreen.username,
     };
 
     final jsonData = jsonEncode(userData);
 
     final response = await http.post(url, body: jsonData, headers: headers);
 
-    if (response.statusCode == 200) {
-      // Handle a successful response here if needed
-    } else {
-      // Handle error when the API request fails
-      // You may want to show an error message or take other actions here
-    }
+    return response.statusCode;
   }
 
   String getInitials(String name) {
@@ -257,7 +256,7 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
     );
   }
 
-  void _showAddFriendDialog(User user) {
+  void _showAddFriendDialog(User user) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -279,8 +278,9 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
               child: Center(
                 child: SimpleElevatedButton(
                   color: const Color(0xFF78BC3F),
-                  onPressed: () {
-                    addFriend(user.username, widget.username);
+                  onPressed: () async {
+                    await addFriend(user.username);
+                    Navigator.of(context).pop();
                   },
                   child: const Text(
                     'Add user as friend',
@@ -304,8 +304,9 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
         appBar: AppBar(
             backgroundColor: Colors.green,
             title: const Text('Create Run'),
-            bottom: const TabBar(
-              tabs: <Widget>[
+            bottom: TabBar(
+              controller: _tabController,
+              tabs: const <Widget>[
                 Tab(text: "Friends"),
                 Tab(text: "Add Friends"),
               ],

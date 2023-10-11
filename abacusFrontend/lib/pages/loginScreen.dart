@@ -200,13 +200,13 @@ class _LoginScreenState extends State<LoginScreen> {
               if (loginError != null)
                 Center(
                   child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    loginError!,
-                    style: const TextStyle(color: Colors.red),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      loginError!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
