@@ -89,7 +89,7 @@ class _RunScreenState extends State<RunScreen> {
       context,
       MaterialPageRoute(
           builder: (context) => const SummaryScreen(
-              distane: _totalDistance,
+              distance: _totalDistance,
               hours: _hours,
               minutes: _minutes,
               seconds: _seconds,
