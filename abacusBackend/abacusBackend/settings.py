@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'run',
     'channels',
     'signaling',
+    'users',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
