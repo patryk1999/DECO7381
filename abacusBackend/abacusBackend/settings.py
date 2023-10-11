@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+#from abacusBackend.asgi import application
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,14 +26,16 @@ SECRET_KEY = 'django-insecure-f&ag!v&ja!pt%q7liq+vh_6vvem3bt+2j9@($z7klp+7d9lhn8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'run',
     'channels',
-    'voicechat',
+    'signaling',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,8 +60,6 @@ CHANNEL_LAYERS = {
     },
 }
 
-ROOT_URLCONF = 'abacusBackend.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -74,9 +75,8 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'abacusBackend.wsgi.application'
-
+ROOT_URLCONF = 'abacusBackend.urls'
+ASGI_APPLICATION = 'abacusBackend.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
