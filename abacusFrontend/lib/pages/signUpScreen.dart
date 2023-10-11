@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:abacusfrontend/pages/loginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:abacusfrontend/components/input_field.dart';
 import '../components/simple_elevated_button.dart';
+import 'package:http/http.dart' as http;
 
 
 
@@ -14,7 +18,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   late String firstname, lastname, username, email, password;
-  String? firstnameError, lastnameError, usernameError, emailError, passwordError;
+  String? firstnameError, lastnameError, usernameError, emailError, passwordError,signUpError;
   Function(String? firstname, String? lastname, String? username, String? email, String? password)? get onSubmitted =>
       widget.onSubmitted;
   
@@ -31,6 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     usernameError = null;
     emailError = null;
     passwordError = null;
+    signUpError = null;
   }
 
   void resetErrorText() {
@@ -40,6 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       usernameError = null;
       emailError = null;
       passwordError = null;
+      signUpError = null;
     });
   }
   bool validate() {
@@ -79,12 +85,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
   return isValid;
   }
 
-  void submit() {
+  void submit()  async{
     if (validate()) {
       if (onSubmitted != null) {
         onSubmitted!(firstname, lastname, username, email, password);
       }
+      final url = Uri.parse('http://127.0.0.1:8000/users/newUser/');
+      final userData = {
+        'firstname': firstname,
+        'lastname': lastname, 
+        'username': username, 
+        'email': email, 
+        'password': password
+        };
+      final jsonData = jsonEncode(userData);
+      final headers = <String, String>{'Content-Type': 'application/json'};
+
+      final respons = await http.post(url,body: jsonData, headers: headers);
+
+      if(respons.statusCode == 200) {
+        _navigateToNewPage();
+      } else {
+        setState((){
+          signUpError = 'Username already exists';
+        });
+      }
+      
     }
+  }
+    void _navigateToNewPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+    ));
   }
 
 
@@ -94,10 +128,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-      
-
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 0),
       
@@ -277,11 +307,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
               ),
+              if (signUpError != null)
+                Center(
+                  child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    signUpError!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
-// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

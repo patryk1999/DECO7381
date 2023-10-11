@@ -9,7 +9,7 @@ class InputField extends StatelessWidget {
   final String? errorText;
   final bool obscureText;
   const InputField(
-      {this.onChanged, 
+      {this.onChanged,
       this.onSubmitted,
       this.errorText,
       this.keyboardType,

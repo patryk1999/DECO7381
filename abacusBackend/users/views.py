@@ -11,12 +11,8 @@ from django.db.models import Q
 
 # Create your views here.
 
-#@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def test(request):
-    return HttpResponse("I am Ok")
 
-#@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 @csrf_exempt
 def makeFriends(request):
     body_unicode = request.body.decode('utf-8')
@@ -31,6 +27,19 @@ def makeFriends(request):
 
     return HttpResponse(status=200)
 
+@permission_classes([IsAuthenticated])
+@csrf_exempt
+def getAllUsers(request):
+ 
+    listOfUsers = {}
+    allUsers = User.objects.all()
+    for user in allUsers:
+        user_info = [user.first_name, user.last_name, user.email, user.username]
+        listOfUsers[user.id] = user_info 
+    
+    print(listOfUsers)
+    return JsonResponse(listOfUsers)
+
 
 @csrf_exempt
 def makeUser(request):
@@ -39,7 +48,9 @@ def makeUser(request):
     new_username = body['username']
     new_email = body['email']
     new_password = body['password']
-    user = User.objects.create_user(username=new_username, email=new_email, password=new_password)
+    new_firstname = body['firstname']
+    new_lastname = body['lastname']
+    user = User.objects.create_user(username=new_username, email=new_email, password=new_password, last_name = new_lastname, first_name = new_firstname)
     user.save()
     return HttpResponse(status=200)
 
@@ -58,11 +69,10 @@ def getFriends(request):
         list_of_friends.append({friend.user1_id})
         list_of_friends.append({friend.user2_id})
     #Make a list with usernames instead of userIds
-    list_of_usernames = []
+    list_of_user_data = {}
     for friend in list_of_friends:
         friend_obj = User.objects.get(id=list(friend)[0])
-        list_of_usernames.append(friend_obj.username)
-    # Remove redundant usernames
-    list_of_usernames = list(set(list_of_usernames))
-    list_of_usernames.remove(User.objects.get(id=user_id).username)
-    return JsonResponse(list_of_usernames,safe=False, status=200)
+        user_info = [friend_obj.first_name, friend_obj.last_name, friend_obj.email, friend_obj.username]
+        list_of_user_data[friend_obj.id] = user_info
+
+    return JsonResponse(list_of_user_data,safe=False, status=200)
