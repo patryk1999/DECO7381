@@ -1,6 +1,8 @@
 import 'package:abacusfrontend/pages/searchScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart'; // Import Geolocator library
 import '../components/app_bar.dart';
+import 'runScreen.dart'; // Import the RunScreen
 
 void main() => runApp(const HomeScreen());
 
@@ -19,6 +21,26 @@ class HomeScreen extends StatelessWidget {
 
 class AppBarExample extends StatelessWidget {
   const AppBarExample({Key? key}) : super(key: key);
+
+  Future<void> _requestLocationPermission(BuildContext context) async {
+    final servicePermission = await Geolocator.isLocationServiceEnabled();
+    if (!servicePermission) {
+      print("Service disabled");
+    }
+
+    final permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      final newPermission = await Geolocator.requestPermission();
+      if (newPermission == LocationPermission.denied) {
+        return;
+      }
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const RunScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +108,11 @@ class AppBarExample extends StatelessWidget {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 13),
                           ),
-                          onPressed: () {},
-                          child: const Text(
+                          onPressed: () {
+                            // Call the _requestLocationPermission function
+                            _requestLocationPermission(context);
+                          },
+                          child: Text(
                             'Join Run',
                             style: TextStyle(
                                 fontSize: 20, fontStyle: FontStyle.normal),
