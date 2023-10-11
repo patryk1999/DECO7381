@@ -5,7 +5,9 @@ import '../components/app_bar.dart';
 void main() => runApp(const HomeScreen());
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +46,8 @@ class AppBarExample extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 4.0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 4.0),
             child: Center(
               child: Text(
                 "Hey friend, welcome back! Ready to run today?",
@@ -66,7 +68,8 @@ class AppBarExample extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   width: double.infinity,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -77,32 +80,32 @@ class AppBarExample extends StatelessWidget {
                             primary: const Color(0xFF78BC3F),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
-                              side: BorderSide(
-                                color: const Color(0xFF386641),
+                              side: const BorderSide(
+                                color: Color(0xFF386641),
                               ),
                             ),
-                            padding: EdgeInsets.symmetric(vertical: 13),
+                            padding: const EdgeInsets.symmetric(vertical: 13),
                           ),
                           onPressed: () {},
-                          child: Text(
+                          child: const Text(
                             'Join Run',
                             style: TextStyle(
                                 fontSize: 20, fontStyle: FontStyle.normal),
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             primary: const Color(0xFF78BC3F),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
-                              side: BorderSide(
-                                color: const Color(0xFF386641),
+                              side: const BorderSide(
+                                color: Color(0xFF386641),
                               ),
                             ),
-                            padding: EdgeInsets.symmetric(vertical: 13),
+                            padding: const EdgeInsets.symmetric(vertical: 13),
                           ),
                           onPressed: () {
                             Navigator.push(
@@ -111,7 +114,7 @@ class AppBarExample extends StatelessWidget {
                                   builder: (context) => const SearchScreen()),
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             'Create Run',
                             style: TextStyle(
                                 fontSize: 20, fontStyle: FontStyle.normal),

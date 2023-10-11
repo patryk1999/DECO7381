@@ -12,6 +12,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({this.onSubmitted, Key? key}) : super(key: key);
   static String? accesToken;
   static String? refreshToken;
+  static String username = "";
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -76,6 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Map<String, dynamic> tokenData = json.decode(response.body);
         LoginScreen.accesToken = tokenData['access'];
         LoginScreen.refreshToken = tokenData['refresh'];
+        LoginScreen.username = username;
         _navigateToNewPage();
       } else {
         setState(() {
@@ -87,10 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _navigateToNewPage() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
-        ));
+        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
 
   @override

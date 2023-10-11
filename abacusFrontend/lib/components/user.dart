@@ -1,13 +1,15 @@
 class User {
-  final String name;
+  final String id;
+  final String firstname;
+  final String lastname;
   final String username;
   final String email;
-  final String initials;
 
   const User({
-    required this.name,
+    required this.id,
+    required this.firstname,
+    required this.lastname,
     required this.username,
     required this.email,
-    required this.initials,
   });
 }

@@ -12,11 +12,11 @@ class UserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
-        title: Text(user.name),
+        title: Text(user.firstname),
       ),
       body: Center(
         child: Column(children: <Widget>[
-          Text(user.name,
+          Text(user.firstname,
               style: const TextStyle(
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
