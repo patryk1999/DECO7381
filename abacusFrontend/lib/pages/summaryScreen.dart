@@ -39,8 +39,7 @@ class AppBarExample extends StatelessWidget {
           Container(
             margin: EdgeInsets.all(20),
             color: Color(0xFFF4FFF0),
-            padding: const EdgeInsets.fromLTRB(30.0, 16.0, 16.0, 30.0),
-            // ignore: prefer_const_constructors
+            padding: const EdgeInsets.fromLTRB(20.0, 16.0, 16.0, 30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -54,9 +53,9 @@ class AppBarExample extends StatelessWidget {
                     letterSpacing: 1.2,
                   ),
                 ),
-                SizedBox(height: 20), // Space between the texts
+                SizedBox(height: 20),
                 Text(
-                  "Time", // Your additional text
+                  "Time",
                   style: TextStyle(
                     fontSize: 12,
                     color: Color(0xFF386641),
@@ -76,7 +75,7 @@ class AppBarExample extends StatelessWidget {
                   indent: 60,
                   endIndent: 60,
                 ),
-                SizedBox(height: 20), // Space between the texts
+                SizedBox(height: 20),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Row(
@@ -94,7 +93,7 @@ class AppBarExample extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "1,36 km", // Your additional text
+                              "1,36 km",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 30,
@@ -116,7 +115,7 @@ class AppBarExample extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Average Pace", // Your additional text
+                              "Average Pace",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                 fontSize: 12,
@@ -124,7 +123,7 @@ class AppBarExample extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "9,58 km/t", // Your additional text
+                              "9,58 km/t",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 30,
@@ -150,7 +149,7 @@ class AppBarExample extends StatelessWidget {
           Container(
             margin: EdgeInsets.all(16),
             color: Color(0xFFF4FFF0),
-            padding: const EdgeInsets.fromLTRB(30.0, 16.0, 16.0, 30.0),
+            padding: const EdgeInsets.fromLTRB(20.0, 16.0, 16.0, 30.0),
             child: Column(
               // mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -164,7 +163,7 @@ class AppBarExample extends StatelessWidget {
                     letterSpacing: 1.2,
                   ),
                 ),
-                SizedBox(height: 20), // Space between the texts
+                SizedBox(height: 20),
                 Container(
                     width: 150,
                     child: Text(
@@ -183,9 +182,9 @@ class AppBarExample extends StatelessWidget {
                   indent: 50,
                   endIndent: 50,
                 ),
-                SizedBox(height: 20), // Space between the texts
+                SizedBox(height: 20),
                 Text(
-                  "Runner 1", // Your additional text
+                  "Runner 1",
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     fontSize: 12,
@@ -196,7 +195,7 @@ class AppBarExample extends StatelessWidget {
                   color: Color(0xFF78BC3F),
                   thickness: 1,
                 ),
-                SizedBox(height: 10), // Space between the texts
+                SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Row(
@@ -206,7 +205,7 @@ class AppBarExample extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Distance", // Your additional text
+                              "Distance",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                 fontSize: 12,
@@ -214,7 +213,7 @@ class AppBarExample extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "1,36 km", // Your additional text
+                              "1,36 km",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 30,
@@ -230,7 +229,7 @@ class AppBarExample extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Average Pace", // Your additional text
+                              "Average Pace",
                               textAlign: TextAlign.left,
                               style: TextStyle(
                                 fontSize: 12,
@@ -238,7 +237,7 @@ class AppBarExample extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "9,58 km/t", // Your additional text
+                              "9,58 km/t",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 30,
