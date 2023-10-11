@@ -1,4 +1,6 @@
 // ignore: file_names
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:abacusfrontend/pages/homeScreen.dart';
 import 'package:abacusfrontend/pages/signUpScreen.dart';
 import 'package:flutter/material.dart';
@@ -8,15 +10,19 @@ import '../components/simple_elevated_button.dart';
 class LoginScreen extends StatefulWidget {
   final Function(String? username, String? password)? onSubmitted;
   const LoginScreen({this.onSubmitted, Key? key}) : super(key: key);
+  static String? accesToken;
+  static String? refreshToken;
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   late String username, password;
-  String? usernameError, passwordError;
+  String? usernameError, passwordError, loginError;
   Function(String? username, String? password)? get onSubmitted =>
       widget.onSubmitted;
+
   @override
   void initState() {
     super.initState();
@@ -24,17 +30,15 @@ class _LoginScreenState extends State<LoginScreen> {
     password = '';
     usernameError = null;
     passwordError = null;
-  }
-
-  void resetErrorText() {
-    setState(() {
-      usernameError = null;
-      passwordError = null;
-    });
+    loginError = null;
   }
 
   bool validate() {
-    resetErrorText();
+    setState(() {
+      usernameError = null;
+      passwordError = null;
+      loginError = null;
+    });
 
     bool isValid = true;
     if (username.isEmpty) {
@@ -54,12 +58,39 @@ class _LoginScreenState extends State<LoginScreen> {
     return isValid;
   }
 
-  void submit() {
+  void submit() async {
     if (validate()) {
       if (onSubmitted != null) {
         onSubmitted!(username, password);
       }
+      final url = Uri.parse('http://127.0.0.1:8000/users/api/token/');
+      final userData = {
+        'username': username,
+        'password': password,
+      };
+      final jsonData = jsonEncode(userData);
+      final headers = {'Content-Type': 'application/json'};
+      final response = await http.post(url, body: jsonData, headers: headers);
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> tokenData = json.decode(response.body);
+        LoginScreen.accesToken = tokenData['access'];
+        LoginScreen.refreshToken = tokenData['refresh'];
+        _navigateToNewPage();
+      } else {
+        setState(() {
+          loginError = 'The user doesn\'t exist or the password is incorrect';
+        });
+      }
     }
+  }
+
+  void _navigateToNewPage() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ));
   }
 
   @override
@@ -139,11 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: SimpleElevatedButton(
                     color: const Color(0xFF78BC3F),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const HomeScreen()),
-                      );
+                      submit();
                     },
                     child: const Text(
                       'Log In',
@@ -168,6 +195,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(
                       color: Color(0xFF386641),
                     ),
+                  ),
+                ),
+              ),
+              if (loginError != null)
+                Center(
+                  child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    loginError!,
+                    style: const TextStyle(color: Colors.red),
                   ),
                 ),
               ),
