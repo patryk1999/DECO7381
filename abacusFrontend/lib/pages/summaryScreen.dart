@@ -294,7 +294,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                     "+${(friendPace - pace).toStringAsFixed(2)} km/h",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      fontSize: 30,
+                                      fontSize: 29,
                                       color: Color(0xFFBC3F3F),
                                       fontWeight: FontWeight.w300,
                                     ),
