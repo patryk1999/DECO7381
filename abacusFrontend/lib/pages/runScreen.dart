@@ -1,3 +1,5 @@
+// ignore: file_names
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -6,12 +8,13 @@ import 'dart:async';
 class RunScreen extends StatefulWidget {
   const RunScreen({Key? key}) : super(key: key);
 
+  @override
   State<RunScreen> createState() => _RunScreenState();
 }
 
 class _RunScreenState extends State<RunScreen> {
   late GoogleMapController mapController;
-  late Position? _previousPosition = null;
+  late Position? _previousPosition;
   late Position currentPosition;
   late double _totalDistance = 0;
   late bool servicePermission = false;
@@ -34,7 +37,9 @@ class _RunScreenState extends State<RunScreen> {
   Future<void> _getCurrentLocation() async {
     servicePermission = await Geolocator.isLocationServiceEnabled();
     if (!servicePermission) {
-      print("service disabled");
+      if (kDebugMode) {
+        print("service disabled");
+      }
     }
 
     permission = await Geolocator.checkPermission();
@@ -63,7 +68,7 @@ class _RunScreenState extends State<RunScreen> {
   }
 
   void _pauseTimer() {
-    if (_timer != null && !_isTimerPaused) {
+    if (!_isTimerPaused) {
       _timer.cancel();
       _isTimerPaused = true;
       _frozenDistance = _totalDistance;
@@ -165,10 +170,11 @@ class _RunScreenState extends State<RunScreen> {
                         });
                       },
                       initialCameraPosition: CameraPosition(
-                        target: LatLng(
-                          currentPosition.latitude,
-                          currentPosition.longitude,
-                        ),
+                        // ignore: unnecessary_null_comparison
+                        target: currentPosition != null
+                            ? LatLng(currentPosition.latitude,
+                                currentPosition.longitude)
+                            : const LatLng(0, 0),
                         zoom: 15.0,
                       ),
                       myLocationEnabled: true,
@@ -230,9 +236,7 @@ class _RunScreenState extends State<RunScreen> {
                         style: TextStyle(fontSize: 18),
                       ),
                       Text(
-                        _isTimerPaused
-                            ? '${(_frozenDistance / 1000).toStringAsFixed(2)} km'
-                            : '${(_totalDistance / 1000).toStringAsFixed(2)} km',
+                        '${_hours.toString().padLeft(2, '0')}:${_minutes.toString().padLeft(2, '0')}:${_seconds.toString().padLeft(2, '0')}',
                         style: const TextStyle(fontSize: 34),
                       ),
                       const Text(
@@ -240,7 +244,9 @@ class _RunScreenState extends State<RunScreen> {
                         style: TextStyle(fontSize: 18),
                       ),
                       Text(
-                        '${(_totalDistance).toStringAsFixed(2)} km',
+                        _isTimerPaused
+                            ? '${(_frozenDistance / 1000).toStringAsFixed(2)} km'
+                            : '${(_totalDistance / 1000).toStringAsFixed(2)} km',
                         style: const TextStyle(fontSize: 34),
                       ),
                       const Text(
@@ -264,7 +270,7 @@ class _RunScreenState extends State<RunScreen> {
                             color: Color(0xFF78BC3F),
                           ),
                           child: Center(
-                            child: Container(
+                            child: SizedBox(
                               width: 70,
                               height: 70,
                               child: RawMaterialButton(
@@ -294,7 +300,7 @@ class _RunScreenState extends State<RunScreen> {
                             color: Color(0xFF78BC3F),
                           ),
                           child: Center(
-                            child: Container(
+                            child: SizedBox(
                               width: 60,
                               height: 60,
                               child: RawMaterialButton(
@@ -322,36 +328,34 @@ class _RunScreenState extends State<RunScreen> {
               ),
               Expanded(
                 flex: 1,
-                child: Container(
-                  child: Column(
-                    children: [
-                      Container(
+                child: Column(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width / 2,
+                      height: 30,
+                      color: const Color(0xFF78BC3F),
+                      child:
+                          const Text("Friend", style: TextStyle(fontSize: 24)),
+                    ),
+                    const Text(
+                      "Time",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const Text("00:00:00", style: TextStyle(fontSize: 34)),
+                    const Text(
+                      "Distance",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const Text("1.36 km", style: TextStyle(fontSize: 34)),
+                    const Text(
+                      "Average Pace",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    const Text("9.56 km/t", style: TextStyle(fontSize: 34)),
+                    SizedBox(
                         width: MediaQuery.of(context).size.width / 2,
-                        height: 30,
-                        color: const Color(0xFF78BC3F),
-                        child: const Text("Friend",
-                            style: TextStyle(fontSize: 24)),
-                      ),
-                      const Text(
-                        "Time",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      const Text("00:00:00", style: TextStyle(fontSize: 34)),
-                      const Text(
-                        "Distance",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      const Text("1.36 km", style: TextStyle(fontSize: 34)),
-                      const Text(
-                        "Average Pace",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      const Text("9.56 km/t", style: TextStyle(fontSize: 34)),
-                      SizedBox(
-                          width: MediaQuery.of(context).size.width / 2,
-                          height: 80)
-                    ],
-                  ),
+                        height: 80)
+                  ],
                 ),
               ),
             ],

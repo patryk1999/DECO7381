@@ -1,8 +1,7 @@
 import 'package:abacusfrontend/pages/searchScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart'; // Import Geolocator library
 import '../components/app_bar.dart';
-import 'runScreen.dart'; // Import the RunScreen
+import 'runScreen.dart';
 
 void main() => runApp(const HomeScreen());
 
@@ -22,31 +21,11 @@ class HomeScreen extends StatelessWidget {
 class AppBarExample extends StatelessWidget {
   const AppBarExample({Key? key}) : super(key: key);
 
-  Future<void> _requestLocationPermission(BuildContext context) async {
-    final servicePermission = await Geolocator.isLocationServiceEnabled();
-    if (!servicePermission) {
-      print("Service disabled");
-    }
-
-    final permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      final newPermission = await Geolocator.requestPermission();
-      if (newPermission == LocationPermission.denied) {
-        return;
-      }
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const RunScreen()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     TextButton firstButton = TextButton(
       style: TextButton.styleFrom(
-        primary: const Color(0xFF78BC3F),
+        foregroundColor: const Color(0xFF78BC3F),
       ),
       onPressed: () {},
       child: const Icon(Icons.search),
@@ -54,7 +33,7 @@ class AppBarExample extends StatelessWidget {
 
     TextButton secondButton = TextButton(
       style: TextButton.styleFrom(
-        primary: const Color(0xFF78BC3F),
+        foregroundColor: const Color(0xFF78BC3F),
       ),
       onPressed: () {},
       child: const Icon(Icons.settings),
@@ -99,7 +78,7 @@ class AppBarExample extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: const Color(0xFF78BC3F),
+                            backgroundColor: const Color(0xFF78BC3F),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                               side: const BorderSide(
@@ -109,10 +88,13 @@ class AppBarExample extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: 13),
                           ),
                           onPressed: () {
-                            // Call the _requestLocationPermission function
-                            _requestLocationPermission(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const RunScreen()),
+                            );
                           },
-                          child: Text(
+                          child: const Text(
                             'Join Run',
                             style: TextStyle(
                                 fontSize: 20, fontStyle: FontStyle.normal),
@@ -123,7 +105,7 @@ class AppBarExample extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: const Color(0xFF78BC3F),
+                            backgroundColor: const Color(0xFF78BC3F),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                               side: const BorderSide(

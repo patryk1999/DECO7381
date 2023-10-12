@@ -7,7 +7,7 @@ import '../components/user.dart';
 import 'package:http/http.dart' as http;
 
 void main() => runApp(SearchScreen(
-    accessToken: LoginScreen.accesToken, username: LoginScreen.username));
+    accessToken: LoginScreen.accessToken, username: LoginScreen.username));
 
 class SearchScreen extends StatefulWidget {
   final String? accessToken;
@@ -16,6 +16,7 @@ class SearchScreen extends StatefulWidget {
       : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _SearchScreenState createState() => _SearchScreenState();
 }
 
@@ -64,7 +65,7 @@ class _SearchScreenState extends State<SearchScreen>
     final url = Uri.parse('http://127.0.0.1:8000/users/getFriends/');
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${LoginScreen.accesToken}',
+      'Authorization': 'Bearer ${LoginScreen.accessToken}',
     };
 
     final response = await http.get(url, headers: headers);
@@ -97,7 +98,7 @@ class _SearchScreenState extends State<SearchScreen>
     final url = Uri.parse('http://127.0.0.1:8000/users/getAllUsers/');
     final headers = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${LoginScreen.accesToken}',
+      'Authorization': 'Bearer ${LoginScreen.accessToken}',
     };
 
     final response = await http.get(url, headers: headers);
@@ -280,6 +281,7 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
                   color: const Color(0xFF78BC3F),
                   onPressed: () async {
                     await addFriend(user.username);
+                    // ignore: use_build_context_synchronously
                     Navigator.of(context).pop();
                   },
                   child: const Text(
