@@ -38,7 +38,7 @@ class SignalingConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.groups[index], message)
     async def send_message(self, event):
-        message = event['message']
-        await self.send(text_data=json.dumps(message))
+        event.pop('type')
+        await self.send(text_data=json.dumps(event))
    
        
