@@ -23,7 +23,9 @@ class SignalingConsumer(AsyncWebsocketConsumer):
             message = json.loads(text_data)
         else: 
             message = {}
+            
         message['type'] = 'send_message'
+        
         try:
             room = self.scope['url_route']['kwargs']['room_name']
         except:
@@ -35,6 +37,8 @@ class SignalingConsumer(AsyncWebsocketConsumer):
                 break
         await self.channel_layer.group_send(
             self.groups[index], message)
-    
+    async def send_message(self, event):
+        message = event['message']
+        await self.send(text_data=json.dumps(message))
    
        
