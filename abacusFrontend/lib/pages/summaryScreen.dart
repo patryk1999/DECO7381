@@ -1,23 +1,46 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:abacusfrontend/pages/runScreen.dart';
 import 'package:flutter/material.dart';
 import '../components/app_bar.dart';
 
-void main() => runApp(const SummaryScreen());
-
-class SummaryScreen extends StatelessWidget {
+class SummaryScreen extends StatefulWidget {
   const SummaryScreen({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: AppBarExample(),
-    );
-  }
+  State<SummaryScreen> createState() => _SummaryScreenState();
 }
 
-class AppBarExample extends StatelessWidget {
-  const AppBarExample({Key? key}) : super(key: key);
+class _SummaryScreenState extends State<SummaryScreen> {
+  late double distance = RunScreen.totalDistance;
+  late int hours = RunScreen.hours;
+  late int minutes = RunScreen.minutes;
+  late int seconds = RunScreen.seconds;
+  late double pace = calculatePace(hours, minutes, seconds, distance);
+
+  late double friendDistance = 1.24;
+  late int friendHours = 00;
+  late int friendMinutes = 06;
+  late int friendSeconds = 45;
+  late double friendPace =
+      calculatePace(friendHours, friendMinutes, friendSeconds, friendDistance);
+
+  double calculatePace(int hours, int minutes, int seconds, double distance) {
+    double totalHours = hours + (minutes / 60.0) + (seconds / 3600.0);
+    double pace = distance / totalHours;
+    return pace;
+  }
+
+  String padZero(int value) {
+    return value.toString().padLeft(2, '0');
+  }
+
+  bool isHigher(double you, double friend) {
+    if (you > friend) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +85,7 @@ class AppBarExample extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "00:06:45",
+                  '${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}',
                   style: TextStyle(
                     fontSize: 30,
                     color: Color(0xFF000000),
@@ -93,7 +116,7 @@ class AppBarExample extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "1,36 km",
+                              "${(distance).toStringAsFixed(2)} km",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 30,
@@ -123,7 +146,7 @@ class AppBarExample extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "9,58 km/t",
+                              "${(pace).toStringAsFixed(2)} km/h",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 30,
@@ -166,16 +189,27 @@ class AppBarExample extends StatelessWidget {
                 SizedBox(height: 20),
                 Container(
                     width: 150,
-                    child: Text(
-                      "You’re getting there",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF386641),
-                        letterSpacing: 1.2,
-                      ),
-                    )),
+                    child: isHigher(friendPace, pace)
+                        ? Text(
+                            "You’re getting there",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF386641),
+                              letterSpacing: 1.2,
+                            ),
+                          )
+                        : Text(
+                            "You’re the fastest",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF386641),
+                              letterSpacing: 1.2,
+                            ),
+                          )),
                 Divider(
                   color: Color(0xFF78BC3F),
                   thickness: 1,
@@ -212,15 +246,25 @@ class AppBarExample extends StatelessWidget {
                                 color: Color(0xFF386641),
                               ),
                             ),
-                            Text(
-                              "1,36 km",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 30,
-                                color: Color(0xFF000000),
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
+                            isHigher(distance, friendDistance)
+                                ? Text(
+                                    "-${(distance - friendDistance).toStringAsFixed(2)} km",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      color: Color(0xFF78BC3F),
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  )
+                                : Text(
+                                    "+${(friendDistance - distance).toStringAsFixed(2)} km",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      color: Color(0xFFBC3F3F),
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  )
                           ],
                         ),
                       ),
@@ -236,15 +280,25 @@ class AppBarExample extends StatelessWidget {
                                 color: Color(0xFF386641),
                               ),
                             ),
-                            Text(
-                              "9,58 km/t",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 30,
-                                color: Color(0xFF000000),
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
+                            isHigher(pace, friendPace)
+                                ? Text(
+                                    "-${(pace - friendPace).toStringAsFixed(2)} km/h",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      color: Color(0xFF78BC3F),
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  )
+                                : Text(
+                                    "+${(friendPace - pace).toStringAsFixed(2)} km/h",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      color: Color(0xFFBC3F3F),
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
                           ],
                         ),
                       ),
