@@ -1,9 +1,13 @@
 // ignore: file_names
+import 'dart:convert';
+
+import 'package:abacusfrontend/pages/loginScreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
+import 'package:http/http.dart' as http;
 
 class RunScreen extends StatefulWidget {
   const RunScreen({Key? key}) : super(key: key);
@@ -14,8 +18,8 @@ class RunScreen extends StatefulWidget {
 
 class _RunScreenState extends State<RunScreen> {
   late GoogleMapController mapController;
-  late Position? _previousPosition;
-  late Position currentPosition;
+  late Position? _previousPosition = null;
+  late Position? currentPosition;
   late double _totalDistance = 0;
   late bool servicePermission = false;
   late LocationPermission permission;
@@ -24,7 +28,7 @@ class _RunScreenState extends State<RunScreen> {
   int _minutes = 0;
   int _hours = 0;
   double _frozenDistance = 0;
-  String _frozenPace = '0.00 km/h';
+  double _frozenPace = 0.00;
   bool _isTimerPaused = true;
 
   @override
@@ -32,6 +36,29 @@ class _RunScreenState extends State<RunScreen> {
     super.initState();
     _getCurrentLocation();
     _startTimer();
+  }
+
+  Future<int> addRun() async {
+    final currentTime = DateTime.now();
+
+    final startTime = currentTime.subtract(
+      Duration(
+        hours: _hours,
+        minutes: _minutes,
+        seconds: _seconds,
+      ),
+    );
+
+    final url = Uri.parse(
+        "http://127.0.0.1:8000/run/addRun/?startTime=${startTime.toIso8601String()}&avgPace=${_calculatePace()}&endTime=${currentTime.toIso8601String()}");
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${LoginScreen.accessToken}',
+    };
+
+    final response = await http.post(url, headers: headers);
+
+    return response.statusCode;
   }
 
   Future<void> _getCurrentLocation() async {
@@ -68,7 +95,7 @@ class _RunScreenState extends State<RunScreen> {
   }
 
   void _pauseTimer() {
-    if (!_isTimerPaused) {
+    if (_timer != null && !_isTimerPaused) {
       _timer.cancel();
       _isTimerPaused = true;
       _frozenDistance = _totalDistance;
@@ -76,18 +103,19 @@ class _RunScreenState extends State<RunScreen> {
     }
   }
 
-  String _calculatePace() {
+  double _calculatePace() {
     if (_totalDistance > 0) {
       final double kilometers = _totalDistance / 1000;
       final double hours = _hours + _minutes / 60 + _seconds / 3600;
       final double pace = hours > 0 ? kilometers / hours : 0;
-      return '${pace.toStringAsFixed(2)} km/h';
+      return pace;
     } else {
-      return '0.00 km/h';
+      return 0.00;
     }
   }
 
   void _finishRun() {
+    addRun();
     //To navigate to the summary page
     /*
     Navigator.push(
@@ -124,45 +152,73 @@ class _RunScreenState extends State<RunScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Run",
-          style: TextStyle(
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: const Color(0xFFFFFFFF),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.settings,
-              color: Color(0xFF78BC3F),
+    if (currentPosition == null) {
+      return CircularProgressIndicator();
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            "Run",
+            style: TextStyle(
+              color: Colors.black,
             ),
-            onPressed: () {},
           ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // First row
-          Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 2,
-                  height: MediaQuery.of(context).size.height / 2,
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      right: BorderSide(
-                        color: Color(0xFF78BC3F),
-                        width: 5,
+          centerTitle: true,
+          backgroundColor: const Color(0xFFFFFFFF),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.settings,
+                color: Color(0xFF78BC3F),
+              ),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            // First row
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width / 2,
+                    height: MediaQuery.of(context).size.height / 2,
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        right: BorderSide(
+                          color: Color(0xFF78BC3F),
+                          width: 5,
+                        ),
+                      ),
+                    ),
+                    child: SizedBox(
+                      child: GoogleMap(
+                        onMapCreated: (controller) {
+                          setState(() {
+                            mapController = controller;
+                          });
+                        },
+                        initialCameraPosition: CameraPosition(
+                          // ignore: unnecessary_null_comparison
+                          target: currentPosition != null
+                              ? LatLng(currentPosition!.latitude,
+                                  currentPosition!.longitude)
+                              : const LatLng(0, 0),
+                          zoom: 15.0,
+                        ),
+                        myLocationEnabled: true,
+                        myLocationButtonEnabled: true,
                       ),
                     ),
                   ),
+                ),
+                Expanded(
+                  flex: 1,
                   child: SizedBox(
+                    width: MediaQuery.of(context).size.width / 2,
+                    height: MediaQuery.of(context).size.height / 2,
                     child: GoogleMap(
                       onMapCreated: (controller) {
                         setState(() {
@@ -170,11 +226,10 @@ class _RunScreenState extends State<RunScreen> {
                         });
                       },
                       initialCameraPosition: CameraPosition(
-                        // ignore: unnecessary_null_comparison
-                        target: currentPosition != null
-                            ? LatLng(currentPosition.latitude,
-                                currentPosition.longitude)
-                            : const LatLng(0, 0),
+                        target: LatLng(
+                          currentPosition!.latitude,
+                          currentPosition!.longitude,
+                        ),
                         zoom: 15.0,
                       ),
                       myLocationEnabled: true,
@@ -182,186 +237,165 @@ class _RunScreenState extends State<RunScreen> {
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 1,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width / 2,
-                  height: MediaQuery.of(context).size.height / 2,
-                  child: GoogleMap(
-                    onMapCreated: (controller) {
-                      setState(() {
-                        mapController = controller;
-                      });
-                    },
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                        currentPosition.latitude,
-                        currentPosition.longitude,
-                      ),
-                      zoom: 15.0,
-                    ),
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
-                  ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
 
-          Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      right: BorderSide(
-                        color: Color(0xFF78BC3F),
-                        width: 1,
+            Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        right: BorderSide(
+                          color: Color(0xFF78BC3F),
+                          width: 1,
+                        ),
                       ),
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width / 2,
-                        height: 30,
-                        color: const Color(0xFF78BC3F),
-                        child:
-                            const Text("You", style: TextStyle(fontSize: 24)),
-                      ),
-                      const Text(
-                        "Time",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        '${_hours.toString().padLeft(2, '0')}:${_minutes.toString().padLeft(2, '0')}:${_seconds.toString().padLeft(2, '0')}',
-                        style: const TextStyle(fontSize: 34),
-                      ),
-                      const Text(
-                        "Distance",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        _isTimerPaused
-                            ? '${(_frozenDistance / 1000).toStringAsFixed(2)} km'
-                            : '${(_totalDistance / 1000).toStringAsFixed(2)} km',
-                        style: const TextStyle(fontSize: 34),
-                      ),
-                      const Text(
-                        "Average Pace",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        _isTimerPaused ? _frozenPace : _calculatePace(),
-                        style: const TextStyle(fontSize: 34),
-                      ),
-                      Row(children: [
-                        const SizedBox(
-                          width: 30,
-                          height: 80,
-                        ),
+                    child: Column(
+                      children: [
                         Container(
-                          width: 70,
-                          height: 70,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFF78BC3F),
+                          width: MediaQuery.of(context).size.width / 2,
+                          height: 30,
+                          color: const Color(0xFF78BC3F),
+                          child:
+                              const Text("You", style: TextStyle(fontSize: 24)),
+                        ),
+                        const Text(
+                          "Time",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        Text(
+                          '${_hours.toString().padLeft(2, '0')}:${_minutes.toString().padLeft(2, '0')}:${_seconds.toString().padLeft(2, '0')}',
+                          style: const TextStyle(fontSize: 34),
+                        ),
+                        const Text(
+                          "Distance",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        Text(
+                          _isTimerPaused
+                              ? '${(_frozenDistance / 1000).toStringAsFixed(2)} km'
+                              : '${(_totalDistance / 1000).toStringAsFixed(2)} km',
+                          style: const TextStyle(fontSize: 34),
+                        ),
+                        const Text(
+                          "Average Pace",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        Text(
+                          _isTimerPaused
+                              ? "${_frozenPace.toStringAsFixed(2)} km/h"
+                              : "${_calculatePace()} km/h",
+                          style: const TextStyle(fontSize: 34),
+                        ),
+                        Row(children: [
+                          const SizedBox(
+                            width: 30,
+                            height: 80,
                           ),
-                          child: Center(
-                            child: SizedBox(
-                              width: 70,
-                              height: 70,
-                              child: RawMaterialButton(
-                                shape: const CircleBorder(),
-                                onPressed: () {
-                                  if (_isTimerPaused) {
-                                    _startTimer();
-                                  } else {
-                                    _pauseTimer();
-                                  }
-                                },
-                                child: _isTimerPaused
-                                    ? const Icon(Icons.play_arrow,
-                                        size: 30, color: Colors.white)
-                                    : const Icon(Icons.pause,
-                                        size: 30, color: Colors.white),
+                          Container(
+                            width: 70,
+                            height: 70,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFF78BC3F),
+                            ),
+                            child: Center(
+                              child: SizedBox(
+                                width: 70,
+                                height: 70,
+                                child: RawMaterialButton(
+                                  shape: const CircleBorder(),
+                                  onPressed: () {
+                                    if (_isTimerPaused) {
+                                      _startTimer();
+                                    } else {
+                                      _pauseTimer();
+                                    }
+                                  },
+                                  child: _isTimerPaused
+                                      ? const Icon(Icons.play_arrow,
+                                          size: 30, color: Colors.white)
+                                      : const Icon(Icons.pause,
+                                          size: 30, color: Colors.white),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        Container(
-                          width: 70,
-                          height: 70,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFF78BC3F),
-                          ),
-                          child: Center(
-                            child: SizedBox(
-                              width: 60,
-                              height: 60,
-                              child: RawMaterialButton(
-                                shape: const CircleBorder(),
-                                onPressed: () {
-                                  _finishRun();
-                                },
-                                child: const Center(
-                                  child: Text(
-                                    "FINISH",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
+                          const SizedBox(width: 20),
+                          Container(
+                            width: 70,
+                            height: 70,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFF78BC3F),
+                            ),
+                            child: Center(
+                              child: SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: RawMaterialButton(
+                                  shape: const CircleBorder(),
+                                  onPressed: () {
+                                    _finishRun();
+                                  },
+                                  child: const Center(
+                                    child: Text(
+                                      "FINISH",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ])
+                        ])
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width / 2,
+                        height: 30,
+                        color: const Color(0xFF78BC3F),
+                        child: const Text("Friend",
+                            style: TextStyle(fontSize: 24)),
+                      ),
+                      const Text(
+                        "Time",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      const Text("00:00:00", style: TextStyle(fontSize: 34)),
+                      const Text(
+                        "Distance",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      const Text("1.36 km", style: TextStyle(fontSize: 34)),
+                      const Text(
+                        "Average Pace",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      const Text("9.56 km/h", style: TextStyle(fontSize: 34)),
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width / 2,
+                          height: 80)
                     ],
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width / 2,
-                      height: 30,
-                      color: const Color(0xFF78BC3F),
-                      child:
-                          const Text("Friend", style: TextStyle(fontSize: 24)),
-                    ),
-                    const Text(
-                      "Time",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    const Text("00:00:00", style: TextStyle(fontSize: 34)),
-                    const Text(
-                      "Distance",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    const Text("1.36 km", style: TextStyle(fontSize: 34)),
-                    const Text(
-                      "Average Pace",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    const Text("9.56 km/t", style: TextStyle(fontSize: 34)),
-                    SizedBox(
-                        width: MediaQuery.of(context).size.width / 2,
-                        height: 80)
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+              ],
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
