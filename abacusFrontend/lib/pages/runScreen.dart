@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:async';
+import 'package:abacusfrontend/pages/summaryScreen.dart';
 
 class RunScreen extends StatefulWidget {
+  static double totalDistance = 0;
+  static int seconds = 0;
+  static int minutes = 0;
+  static int hours = 0;
+
   const RunScreen({Key? key}) : super(key: key);
 
   State<RunScreen> createState() => _RunScreenState();
@@ -13,13 +19,9 @@ class _RunScreenState extends State<RunScreen> {
   late GoogleMapController mapController;
   late Position? _previousPosition = null;
   late Position currentPosition;
-  late double _totalDistance = 0;
   late bool servicePermission = false;
   late LocationPermission permission;
   late Timer _timer;
-  int _seconds = 0;
-  int _minutes = 0;
-  int _hours = 0;
   double _frozenDistance = 0;
   String _frozenPace = '0.00 km/h';
   bool _isTimerPaused = true;
@@ -51,7 +53,7 @@ class _RunScreenState extends State<RunScreen> {
         );
 
         setState(() {
-          _totalDistance += distance;
+          RunScreen.totalDistance += distance;
         });
       }
 
@@ -66,15 +68,16 @@ class _RunScreenState extends State<RunScreen> {
     if (_timer != null && !_isTimerPaused) {
       _timer.cancel();
       _isTimerPaused = true;
-      _frozenDistance = _totalDistance;
+      _frozenDistance = RunScreen.totalDistance;
       _frozenPace = _calculatePace();
     }
   }
 
   String _calculatePace() {
-    if (_totalDistance > 0) {
-      final double kilometers = _totalDistance / 1000;
-      final double hours = _hours + _minutes / 60 + _seconds / 3600;
+    if (RunScreen.totalDistance > 0) {
+      final double kilometers = RunScreen.totalDistance / 1000;
+      final double hours =
+          RunScreen.hours + RunScreen.minutes / 60 + RunScreen.seconds / 3600;
       final double pace = hours > 0 ? kilometers / hours : 0;
       return '${pace.toStringAsFixed(2)} km/h';
     } else {
@@ -83,32 +86,22 @@ class _RunScreenState extends State<RunScreen> {
   }
 
   void _finishRun() {
-    //To navigate to the summary page
-    /*
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => const SummaryScreen(
-              distance: _totalDistance,
-              hours: _hours,
-              minutes: _minutes,
-              seconds: _seconds,
-              pace: _)),
-    );*/
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const SummaryScreen()));
   }
 
   void _startTimer() {
     if (_isTimerPaused) {
-      _totalDistance = _frozenDistance;
+      RunScreen.totalDistance = _frozenDistance;
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
-          _seconds++;
-          if (_seconds == 60) {
-            _seconds = 0;
-            _minutes++;
-            if (_minutes == 60) {
-              _minutes = 0;
-              _hours++;
+          RunScreen.seconds++;
+          if (RunScreen.seconds == 60) {
+            RunScreen.seconds = 0;
+            RunScreen.minutes++;
+            if (RunScreen.minutes == 60) {
+              RunScreen.minutes = 0;
+              RunScreen.hours++;
             }
           }
         });
@@ -232,7 +225,7 @@ class _RunScreenState extends State<RunScreen> {
                       Text(
                         _isTimerPaused
                             ? '${(_frozenDistance / 1000).toStringAsFixed(2)} km'
-                            : '${(_totalDistance / 1000).toStringAsFixed(2)} km',
+                            : '${(RunScreen.totalDistance / 1000).toStringAsFixed(2)} km',
                         style: const TextStyle(fontSize: 34),
                       ),
                       const Text(
@@ -240,7 +233,7 @@ class _RunScreenState extends State<RunScreen> {
                         style: TextStyle(fontSize: 18),
                       ),
                       Text(
-                        '${(_totalDistance).toStringAsFixed(2)} km',
+                        '${(RunScreen.totalDistance).toStringAsFixed(2)} km',
                         style: const TextStyle(fontSize: 34),
                       ),
                       const Text(
