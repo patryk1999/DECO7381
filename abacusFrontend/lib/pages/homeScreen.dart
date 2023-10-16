@@ -1,12 +1,14 @@
+import 'package:abacusfrontend/pages/searchScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart'; // Import Geolocator library
 import '../components/app_bar.dart';
-import 'runScreen.dart'; // Import the RunScreen
+import 'runScreen.dart';
 
 void main() => runApp(const HomeScreen());
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,31 +21,11 @@ class HomeScreen extends StatelessWidget {
 class AppBarExample extends StatelessWidget {
   const AppBarExample({Key? key}) : super(key: key);
 
-  Future<void> _requestLocationPermission(BuildContext context) async {
-    final servicePermission = await Geolocator.isLocationServiceEnabled();
-    if (!servicePermission) {
-      print("Service disabled");
-    }
-
-    final permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      final newPermission = await Geolocator.requestPermission();
-      if (newPermission == LocationPermission.denied) {
-        return;
-      }
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const RunScreen()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     TextButton firstButton = TextButton(
       style: TextButton.styleFrom(
-        primary: const Color(0xFF78BC3F),
+        foregroundColor: const Color(0xFF78BC3F),
       ),
       onPressed: () {},
       child: const Icon(Icons.search),
@@ -51,7 +33,7 @@ class AppBarExample extends StatelessWidget {
 
     TextButton secondButton = TextButton(
       style: TextButton.styleFrom(
-        primary: const Color(0xFF78BC3F),
+        foregroundColor: const Color(0xFF78BC3F),
       ),
       onPressed: () {},
       child: const Icon(Icons.settings),
@@ -65,8 +47,8 @@ class AppBarExample extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 4.0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 4.0),
             child: Center(
               child: Text(
                 "Hey friend, welcome back! Ready to run today?",
@@ -87,7 +69,8 @@ class AppBarExample extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   width: double.infinity,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -95,41 +78,50 @@ class AppBarExample extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: const Color(0xFF78BC3F),
+                            backgroundColor: const Color(0xFF78BC3F),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
-                              side: BorderSide(
-                                color: const Color(0xFF386641),
+                              side: const BorderSide(
+                                color: Color(0xFF386641),
                               ),
                             ),
-                            padding: EdgeInsets.symmetric(vertical: 13),
+                            padding: const EdgeInsets.symmetric(vertical: 13),
                           ),
                           onPressed: () {
-                            // Call the _requestLocationPermission function
-                            _requestLocationPermission(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const RunScreen()),
+                            );
                           },
-                          child: Text(
+                          child: const Text(
                             'Join Run',
                             style: TextStyle(
                                 fontSize: 20, fontStyle: FontStyle.normal),
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: const Color(0xFF78BC3F),
+                            backgroundColor: const Color(0xFF78BC3F),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
-                              side: BorderSide(
-                                color: const Color(0xFF386641),
+                              side: const BorderSide(
+                                color: Color(0xFF386641),
                               ),
                             ),
-                            padding: EdgeInsets.symmetric(vertical: 13),
+                            padding: const EdgeInsets.symmetric(vertical: 13),
                           ),
-                          onPressed: () {},
-                          child: Text(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SearchScreen()),
+                            );
+                          },
+                          child: const Text(
                             'Create Run',
                             style: TextStyle(
                                 fontSize: 20, fontStyle: FontStyle.normal),
