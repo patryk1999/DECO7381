@@ -126,7 +126,7 @@ class _SearchScreenState extends State<SearchScreen>
       });
     } else {
       // Handle error when the API request fails
-      // You may want to show an error message or take other actions here
+      // Show an error message or take other actions here
     }
   }
 

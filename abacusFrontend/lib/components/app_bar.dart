@@ -26,7 +26,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         children: <Widget>[
           TextButton(
             style: TextButton.styleFrom(
-              primary: const Color(0xFF78BC3F), // Use primary for text color
+              foregroundColor:
+                  const Color(0xFF78BC3F), // Use primary for text color
             ),
             onPressed: () {},
             child: const Icon(
@@ -36,7 +37,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Text(title, style: TextStyle(color: Colors.black)),
           TextButton(
             style: TextButton.styleFrom(
-              primary: const Color(0xFF78BC3F), // Use primary for text color
+              foregroundColor:
+                  const Color(0xFF78BC3F), // Use primary for text color
             ),
             onPressed: () {},
             child: const Icon(Icons.settings),
