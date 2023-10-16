@@ -1,0 +1,3 @@
+djangorestframework-simplejwt
+channels
+daphne

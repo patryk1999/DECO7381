@@ -1,7 +1,8 @@
 import 'package:abacusfrontend/components/home_card.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart'; // Import Geolocator library
 import '../components/app_bar.dart';
-
+import 'runScreen.dart'; // Import the RunScreen
 
 void main() {
   runApp(
@@ -27,28 +28,45 @@ void main() {
     ),
   );
 }
+
 class HomeScreen extends StatelessWidget {
   final List<Map<String, String>>? homeCardsData;
   const HomeScreen({Key? key, this.homeCardsData}) : super(key: key);
-  
 
-  
+  Future<void> _requestLocationPermission(BuildContext context) async {
+    final servicePermission = await Geolocator.isLocationServiceEnabled();
+    if (!servicePermission) {
+      print("Service disabled");
+    }
+
+    final permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      final newPermission = await Geolocator.requestPermission();
+      if (newPermission == LocationPermission.denied) {
+        return;
+      }
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const RunScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: const CustomAppBar(
-        title: 'Home',
-        firstButton: TextButton(
-          onPressed: null,
-          child: Icon(Icons.search),
-        ),
-        secondButton: TextButton(
-          onPressed: null,
-          child: Icon(Icons.settings),
-        )
-      ),
+        home: Scaffold(
+      appBar: const CustomAppBar(
+          title: 'Home',
+          firstButton: TextButton(
+            onPressed: null,
+            child: Icon(Icons.search),
+          ),
+          secondButton: TextButton(
+            onPressed: null,
+            child: Icon(Icons.settings),
+          )),
       body: Column(
         children: [
           Expanded(
@@ -59,14 +77,14 @@ class HomeScreen extends StatelessWidget {
                     key: UniqueKey(),
                     firstname: "Elin",
                     lastname: 'Bartnes',
-                    username:'EliBart',
+                    username: 'EliBart',
                     time: '00:06:23',
                     distance: '5,54',
                     averagePace: '6,32',
                   ),
                 ),
               ],
-           ),
+            ),
           ),
           Expanded(
             child: Align(
@@ -74,7 +92,8 @@ class HomeScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   width: double.infinity,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -86,21 +105,23 @@ class HomeScreen extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                               side: const BorderSide(
-                                color:  Color(0xFF386641),
+                                color: Color(0xFF386641),
                               ),
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 13),
                           ),
-                          onPressed: () {},
-                          child: const Text(
+                          onPressed: () {
+                            // Call the _requestLocationPermission function
+                            _requestLocationPermission(context);
+                          },
+                          child: Text(
                             'Join Run',
                             style: TextStyle(
                                 fontSize: 20, fontStyle: FontStyle.normal),
                           ),
                         ),
                       ),
-                        const SizedBox( 
-                        width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -129,7 +150,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-    )
-    );
+    ));
   }
 }

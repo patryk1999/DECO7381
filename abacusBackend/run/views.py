@@ -31,7 +31,8 @@ def updateConcurrentRun(request):
     concurrentRun = request.GET.get('concurrentRun')
     runToUpdate = request.GET.get('runToUpdate')
     r = Run.objects.get(id=runToUpdate)
-    r.concurrentRun = concurrentRun 
+    concurrentRunInstance = Run.objects.get(id=concurrentRun)
+    r.concurrentRun = concurrentRunInstance 
     r.save()
     return HttpResponse(status=200)
 
@@ -60,6 +61,11 @@ def getHistory(request):
        attributeArray['startTime'] = run.startTime.strftime("%Y-%m-%d %H:%M:%S")
        attributeArray['endTime'] = run.endTime.strftime("%Y-%m-%d %H:%M:%S")
        attributeArray['avgPace'] = run.avgPace
+       if(run.concurrentRun is not None):
+           runID = run.id
+           run =  Run.objects.get(id=runID)
+           user = run.user
+           attributeArray['runFriend'] = user.username
+           
        historyDict[run.created_at.strftime("%Y-%m-%d %H:%M:%S")] = attributeArray
-    print(historyDict)
-    return HttpResponse(historyDict)
+    return JsonResponse(historyDict)
