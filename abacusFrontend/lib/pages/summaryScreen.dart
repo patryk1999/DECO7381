@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:abacusfrontend/pages/homeScreen.dart';
 import 'package:abacusfrontend/pages/runScreen.dart';
 import 'package:flutter/material.dart';
 import '../components/app_bar.dart';
@@ -48,8 +49,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
       style: TextButton.styleFrom(
         primary: const Color(0xFF78BC3F),
       ),
-      onPressed: () {},
-      child: const Icon(Icons.arrow_back_ios),
+      onPressed: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      },
+      child: const Icon(Icons.home),
     );
 
     return Scaffold(
