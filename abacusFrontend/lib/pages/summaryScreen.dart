@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:abacusfrontend/pages/homeScreen.dart';
 import 'package:abacusfrontend/pages/runScreen.dart';
 import 'package:flutter/material.dart';
@@ -31,27 +29,15 @@ class _SummaryScreenState extends State<SummaryScreen> {
     return pace;
   }
 
-  String padZero(int value) {
-    return value.toString().padLeft(2, '0');
-  }
-
-  bool isHigher(double you, double friend) {
-    if (you > friend) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     TextButton firstButton = TextButton(
       style: TextButton.styleFrom(
-        primary: const Color(0xFF78BC3F),
+        foregroundColor: const Color(0xFF78BC3F),
       ),
       onPressed: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
       },
       child: const Icon(Icons.home),
     );
@@ -64,13 +50,13 @@ class _SummaryScreenState extends State<SummaryScreen> {
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.all(20),
-            color: Color(0xFFF4FFF0),
+            margin: const EdgeInsets.all(20),
+            color: const Color(0xFFF4FFF0),
             padding: const EdgeInsets.fromLTRB(20.0, 16.0, 16.0, 30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   "Your Run",
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -80,8 +66,8 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     letterSpacing: 1.2,
                   ),
                 ),
-                SizedBox(height: 20),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   "Time",
                   style: TextStyle(
                     fontSize: 12,
@@ -89,20 +75,20 @@ class _SummaryScreenState extends State<SummaryScreen> {
                   ),
                 ),
                 Text(
-                  '${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}',
-                  style: TextStyle(
+                  '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
+                  style: const TextStyle(
                     fontSize: 30,
                     color: Color(0xFF000000),
                     fontWeight: FontWeight.w300,
                   ),
                 ),
-                Divider(
+                const Divider(
                   color: Color(0xFF78BC3F),
                   thickness: 1,
                   indent: 60,
                   endIndent: 60,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Row(
@@ -111,7 +97,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               "Distance",
                               textAlign: TextAlign.left,
                               style: TextStyle(
@@ -122,13 +108,13 @@ class _SummaryScreenState extends State<SummaryScreen> {
                             Text(
                               "${(distance).toStringAsFixed(2)} km",
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 30,
                                 color: Color(0xFF000000),
                                 fontWeight: FontWeight.w300,
                               ),
                             ),
-                            Divider(
+                            const Divider(
                               color: Color(0xFF78BC3F),
                               thickness: 1,
                               indent: 0,
@@ -141,7 +127,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               "Average Pace",
                               textAlign: TextAlign.left,
                               style: TextStyle(
@@ -152,13 +138,13 @@ class _SummaryScreenState extends State<SummaryScreen> {
                             Text(
                               "${(pace).toStringAsFixed(2)} km/h",
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 30,
                                 color: Color(0xFF000000),
                                 fontWeight: FontWeight.w300,
                               ),
                             ),
-                            Divider(
+                            const Divider(
                               color: Color(0xFF78BC3F),
                               thickness: 1,
                               indent: 0,
@@ -174,13 +160,12 @@ class _SummaryScreenState extends State<SummaryScreen> {
             ),
           ),
           Container(
-            margin: EdgeInsets.all(16),
-            color: Color(0xFFF4FFF0),
+            margin: const EdgeInsets.all(16),
+            color: const Color(0xFFF4FFF0),
             padding: const EdgeInsets.fromLTRB(20.0, 16.0, 16.0, 30.0),
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   "Run Duel",
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -190,11 +175,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     letterSpacing: 1.2,
                   ),
                 ),
-                SizedBox(height: 20),
-                Container(
+                const SizedBox(height: 20),
+                SizedBox(
                     width: 150,
-                    child: isHigher(friendPace, pace)
-                        ? Text(
+                    child: friendPace > pace
+                        ? const Text(
                             "You’re getting there",
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -204,7 +189,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               letterSpacing: 1.2,
                             ),
                           )
-                        : Text(
+                        : const Text(
                             "You’re the fastest",
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -214,14 +199,14 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               letterSpacing: 1.2,
                             ),
                           )),
-                Divider(
+                const Divider(
                   color: Color(0xFF78BC3F),
                   thickness: 1,
                   indent: 50,
                   endIndent: 50,
                 ),
-                SizedBox(height: 20),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   "Runner 1",
                   textAlign: TextAlign.right,
                   style: TextStyle(
@@ -229,11 +214,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     color: Color(0xFF386641),
                   ),
                 ),
-                Divider(
+                const Divider(
                   color: Color(0xFF78BC3F),
                   thickness: 1,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Row(
@@ -242,7 +227,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               "Distance",
                               textAlign: TextAlign.left,
                               style: TextStyle(
@@ -250,11 +235,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 color: Color(0xFF386641),
                               ),
                             ),
-                            isHigher(distance, friendDistance)
+                            distance > friendDistance
                                 ? Text(
                                     "-${(distance - friendDistance).toStringAsFixed(2)} km",
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 30,
                                       color: Color(0xFF78BC3F),
                                       fontWeight: FontWeight.w300,
@@ -263,7 +248,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 : Text(
                                     "+${(friendDistance - distance).toStringAsFixed(2)} km",
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 30,
                                       color: Color(0xFFBC3F3F),
                                       fontWeight: FontWeight.w300,
@@ -276,7 +261,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               "Average Pace",
                               textAlign: TextAlign.left,
                               style: TextStyle(
@@ -284,11 +269,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 color: Color(0xFF386641),
                               ),
                             ),
-                            isHigher(pace, friendPace)
+                            pace > friendPace
                                 ? Text(
                                     "-${(pace - friendPace).toStringAsFixed(2)} km/h",
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 30,
                                       color: Color(0xFF78BC3F),
                                       fontWeight: FontWeight.w300,
@@ -297,7 +282,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 : Text(
                                     "+${(friendPace - pace).toStringAsFixed(2)} km/h",
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 29,
                                       color: Color(0xFFBC3F3F),
                                       fontWeight: FontWeight.w300,
