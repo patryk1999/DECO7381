@@ -226,10 +226,10 @@ class _RunScreenState extends State<RunScreen> {
                         });
                       },
                       initialCameraPosition: CameraPosition(
-                        target: LatLng(
-                          currentPosition!.latitude,
-                          currentPosition!.longitude,
-                        ),
+                        target: currentPosition != null
+                            ? LatLng(currentPosition!.latitude,
+                                currentPosition!.longitude)
+                            : const LatLng(0, 0),
                         zoom: 15.0,
                       ),
                       myLocationEnabled: true,
