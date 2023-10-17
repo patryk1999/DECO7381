@@ -62,7 +62,8 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<void> fetchData() async {
-    final url = Uri.parse('http://127.0.0.1:8000/users/getFriends/');
+    final url =
+        Uri.parse('https://deco-websocket.onrender.com/users/getFriends/');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${LoginScreen.accessToken}',
@@ -95,7 +96,8 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<void> fetchAllUsers() async {
-    final url = Uri.parse('http://127.0.0.1:8000/users/getAllUsers/');
+    final url =
+        Uri.parse('https://deco-websocket.onrender.com/users/getAllUsers/');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${LoginScreen.accessToken}',
@@ -168,7 +170,8 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<int> addFriend(String? username1) async {
-    final url = Uri.parse('http://127.0.0.1:8000/users/makeFriend/');
+    final url =
+        Uri.parse('https://deco-websocket.onrender.com/users/makeFriend/');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${widget.accessToken}',

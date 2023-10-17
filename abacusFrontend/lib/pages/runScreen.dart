@@ -52,7 +52,7 @@ class _RunScreenState extends State<RunScreen> {
     );
 
     final url = Uri.parse(
-        "http://127.0.0.1:8000/run/addRun/?startTime=${startTime.toIso8601String()}&avgPace=${_calculatePace()}&endTime=${currentTime.toIso8601String()}");
+        "https://deco-websocket.onrender.com/run/addRun/?startTime=${startTime.toIso8601String()}&avgPace=${_calculatePace()}&endTime=${currentTime.toIso8601String()}");
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${LoginScreen.accessToken}',
