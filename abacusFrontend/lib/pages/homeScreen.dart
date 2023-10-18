@@ -1,8 +1,8 @@
 // ignore: file_names
 import 'package:abacusfrontend/pages/loginScreen.dart';
+import 'package:abacusfrontend/pages/roomScreen.dart';
 import 'package:abacusfrontend/pages/searchScreen.dart';
 import 'package:flutter/material.dart';
-import 'runScreen.dart';
 
 void main() => runApp(const HomeScreen());
 
@@ -132,7 +132,7 @@ class AppBarExample extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const RunScreen()),
+                                  builder: (context) => const RoomScreen()),
                             );
                           },
                           child: const Text(

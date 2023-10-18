@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:abacusfrontend/components/simple_elevated_button.dart';
 import 'package:abacusfrontend/pages/loginScreen.dart';
+import 'package:abacusfrontend/pages/roomScreen.dart';
 import 'package:flutter/material.dart';
 import '../components/user.dart';
 import 'package:http/http.dart' as http;
@@ -62,7 +63,8 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<void> fetchData() async {
-    final url = Uri.parse('http://127.0.0.1:8000/users/getFriends/');
+    final url =
+        Uri.parse('https://deco-websocket.onrender.com/users/getFriends/');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${LoginScreen.accessToken}',
@@ -95,7 +97,8 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<void> fetchAllUsers() async {
-    final url = Uri.parse('http://127.0.0.1:8000/users/getAllUsers/');
+    final url =
+        Uri.parse('https://deco-websocket.onrender.com/users/getAllUsers/');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${LoginScreen.accessToken}',
@@ -168,7 +171,8 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<int> addFriend(String? username1) async {
-    final url = Uri.parse('http://127.0.0.1:8000/users/makeFriend/');
+    final url =
+        Uri.parse('https://deco-websocket.onrender.com/users/makeFriend/');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${widget.accessToken}',
@@ -197,30 +201,6 @@ class _SearchScreenState extends State<SearchScreen>
     }
   }
 
-  void _showLoadRunDialog(User user) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-              "Waiting for ${user.firstname} ${user.lastname} to join the run"),
-          content: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-          ),
-          actions: [
-            Center(
-              child: CircularProgressIndicator(
-                value: loadController.value,
-                semanticsLabel: 'Circular progress indicator',
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   _showCreateRunDialog(User user) {
     showDialog(
       context: context,
@@ -242,7 +222,11 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
                   color: const Color(0xFF78BC3F),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    _showLoadRunDialog(user);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RoomScreen()),
+                    );
                   },
                   child: const Text(
                     'Create run',
