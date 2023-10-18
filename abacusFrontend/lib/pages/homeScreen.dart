@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:abacusfrontend/components/home_card.dart';
 import 'package:abacusfrontend/pages/loginScreen.dart';
+import 'package:abacusfrontend/pages/searchScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../components/app_bar.dart';
@@ -19,12 +20,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   List<Map<String, dynamic>> runHistoryList = [];
+  String firstname = "";
+  String lastname = "";
+  String username = "";
+  String otheruser = "";
 
   @override
   void initState() {
     super.initState();
-
-   fetchRunHistory();
+    fetchRunHistory();
+    fetchUserData();
   }
   
 
@@ -36,17 +41,41 @@ class _HomeScreenState extends State<HomeScreen> {
     final response = await http.get(uri, headers: headers);
     if(response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
-      final runHistory = List<Map<String, dynamic>>.from(json.decode(response.body).values);
+      final runHistory = List<Map<String, dynamic>>.from(jsonResponse.values);
 
       setState((){
         runHistoryList = runHistory;
       });
-      print(runHistoryList);
+      //print(runHistoryList);
+      //print(response.body);
+    } else {
+     // print(response.statusCode);
+    }
+}
+
+Future<void> fetchUserData() async {
+    final accessToken = LoginScreen.accessToken;
+    final uri = Uri.parse('http://127.0.0.1:8000/users/getMyData/');
+    final headers = {'Authorization': 'Bearer $accessToken'};
+
+    final response = await http.get(uri, headers: headers);
+    if(response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+
+      setState((){
+        firstname = jsonResponse['firstName'];
+        lastname = jsonResponse['lastName'];
+        username = jsonResponse['username'];
+        otheruser = jsonResponse['concurentUser'];
+      });
       print(response.body);
     } else {
       print(response.statusCode);
     }
 }
+
+
+
 String calculateRunTime(String startTime, String endTime) {
   DateTime start = DateTime.parse(startTime);
   DateTime end = DateTime.parse(endTime);
@@ -115,9 +144,10 @@ String calculateRunTime(String startTime, String endTime) {
                       itemBuilder: (context, index) {
                         final runHistory = runHistoryList[index];
                         return HomeCard(
-                          firstname: 'Elin',
-                          lastname: 'Bartnes', 
-                          username: 'EliBart', 
+                          firstname: firstname,
+                          lastname: lastname, 
+                          username: username, 
+                          otheruser: otheruser,
                           time: calculateRunTime(runHistory['startTime'], runHistory['endTime']), 
                           distance: calculateDistance(runHistory['startTime'], runHistory['endTime'], runHistory['avgPace']), 
                           averagePace: runHistory['avgPace'].toString(),
@@ -173,7 +203,13 @@ String calculateRunTime(String startTime, String endTime) {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 13),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SearchScreen()),
+                            );
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: const Text(

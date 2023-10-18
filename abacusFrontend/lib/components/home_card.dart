@@ -7,6 +7,7 @@ class HomeCard extends StatelessWidget {
   final String time;
   final String distance;
   final String averagePace;
+  final String otheruser;
 
 
   const HomeCard({
@@ -17,6 +18,7 @@ class HomeCard extends StatelessWidget {
     required this.time,
     required this.distance,
     required this.averagePace,
+    required this.otheruser,
   }): super(key: key);
 
 
@@ -93,7 +95,7 @@ class HomeCard extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(left: 10),
                                   child: Text(
-                                    "Did a run with $username",
+                                    "Did a run with $otheruser",
                                     style: const TextStyle(
                                       fontSize: 15,
                                       color:  Color(0xFF386641),
