@@ -10,8 +10,9 @@ import '../components/simple_elevated_button.dart';
 class LoginScreen extends StatefulWidget {
   final Function(String? username, String? password)? onSubmitted;
   const LoginScreen({this.onSubmitted, Key? key}) : super(key: key);
-  static String? accesToken;
+  static String? accessToken;
   static String? refreshToken;
+  static String username = "";
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -74,8 +75,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         Map<String, dynamic> tokenData = json.decode(response.body);
-        LoginScreen.accesToken = tokenData['access'];
+        LoginScreen.accessToken = tokenData['access'];
         LoginScreen.refreshToken = tokenData['refresh'];
+        LoginScreen.username = username;
         _navigateToNewPage();
       } else {
         setState(() {
@@ -87,10 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _navigateToNewPage() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(),
-        ));
+        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
 
   @override
@@ -201,13 +200,13 @@ class _LoginScreenState extends State<LoginScreen> {
               if (loginError != null)
                 Center(
                   child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    loginError!,
-                    style: const TextStyle(color: Colors.red),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      loginError!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

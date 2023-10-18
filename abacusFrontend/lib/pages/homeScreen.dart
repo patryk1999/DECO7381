@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:abacusfrontend/components/home_card.dart';
 import 'package:abacusfrontend/pages/loginScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart'; // Import Geolocator library
+import 'package:geolocator/geolocator.dart';
 import '../components/app_bar.dart';
 import 'runScreen.dart';
 import 'package:http/http.dart' as http; // Import the RunScreen
@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   
 
   Future<void> fetchRunHistory() async {
-    final accessToken = LoginScreen.accesToken;
+    final accessToken = LoginScreen.accessToken;
     final uri = Uri.parse('http://127.0.0.1:8000/run/getHistory');
     final headers = {'Authorization': 'Bearer $accessToken'};
 
