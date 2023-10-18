@@ -94,8 +94,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (onSubmitted != null) {
         onSubmitted!(firstname, lastname, username, email, password);
       }
-      final url =
-          Uri.parse('https://deco-websocket.onrender.com/users/newUser/');
+      final url = Uri.parse('http://127.0.0.1:8000/users/newUser/');
       final userData = {
         'firstname': firstname,
         'lastname': lastname,
