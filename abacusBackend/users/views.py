@@ -29,6 +29,21 @@ def makeFriends(request):
 
 @permission_classes([IsAuthenticated])
 @csrf_exempt
+def getMyData(request):
+    
+    userId = request.headers['Authorization']
+    token = AccessToken(userId.split(' ')[1])
+    userId = token.payload['user_id']
+    owner = User.objects.get(id=userId)
+    dataArray = {}
+    dataArray['username'] = owner.username
+    dataArray['firstName'] = owner.first_name
+    dataArray['lastName']  = owner.last_name
+    dataArray['email'] = owner.email
+    return JsonResponse(dataArray, status=200)
+
+@permission_classes([IsAuthenticated])
+@csrf_exempt
 def getAllUsers(request):
  
     listOfUsers = {}

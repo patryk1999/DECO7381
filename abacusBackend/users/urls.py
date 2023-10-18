@@ -13,5 +13,6 @@ urlpatterns = [
     path('makeFriend/',views.makeFriends),
     path('newUser/', views.makeUser),
     path('getFriends/', views.getFriends),
-    path('getAllUsers/', views.getAllUsers)
+    path('getAllUsers/', views.getAllUsers),
+    path('getMyData/', views.getMyData)
 ]
