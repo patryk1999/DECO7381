@@ -16,8 +16,8 @@ class _RoomState extends State<RoomScreen> {
   final _localVideoRenderer = RTCVideoRenderer();
   final _remoteVideoRenderer = RTCVideoRenderer();
   final sdpController = TextEditingController();
-  WebSocketChannel channel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:8000/3/'));
+  WebSocketChannel channel = WebSocketChannel.connect(
+      Uri.parse('ws://parabolic-clock-402211.ts.r.appspot.com'));
   bool _offer = false;
 
   RTCPeerConnection? _peerConnection;
