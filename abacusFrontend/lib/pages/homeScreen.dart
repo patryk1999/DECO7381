@@ -1,37 +1,73 @@
+
+import 'dart:convert';
+
 import 'package:abacusfrontend/components/home_card.dart';
+import 'package:abacusfrontend/pages/loginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart'; // Import Geolocator library
 import '../components/app_bar.dart';
-import 'runScreen.dart'; // Import the RunScreen
+import 'runScreen.dart';
+import 'package:http/http.dart' as http; // Import the RunScreen
 
-void main() {
-  runApp(
-    const HomeScreen(
-      homeCardsData: [
-        {
-          'firstName': 'Elin',
-          'lastName': 'Bartnes',
-          'username': 'ElinBart',
-          'time': '00:06:23',
-          'distance': '5,54',
-          'avgPace': '6,32',
-        },
-        {
-          'firstName': 'Selma',
-          'lastName': 'Gudmundsen',
-          'username': 'SelmGud',
-          'time': '00:08:15',
-          'distance': '3.78 km',
-          'avgPace': '4.58 km/h',
-        },
-      ],
-    ),
-  );
+
+
+class HomeScreen extends StatefulWidget {
+    @override
+    _HomeScreenState createState() => _HomeScreenState();
 }
 
-class HomeScreen extends StatelessWidget {
-  final List<Map<String, String>>? homeCardsData;
-  const HomeScreen({Key? key, this.homeCardsData}) : super(key: key);
+class _HomeScreenState extends State<HomeScreen> {
+
+  List<Map<String, dynamic>> runHistoryList = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+   fetchRunHistory();
+  }
+  
+
+  Future<void> fetchRunHistory() async {
+    final accessToken = LoginScreen.accesToken;
+    final uri = Uri.parse('http://127.0.0.1:8000/run/getHistory');
+    final headers = {'Authorization': 'Bearer $accessToken'};
+
+    final response = await http.get(uri, headers: headers);
+    if(response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      final runHistory = List<Map<String, dynamic>>.from(json.decode(response.body).values);
+
+      setState((){
+        runHistoryList = runHistory;
+      });
+      print(runHistoryList);
+      print(response.body);
+    } else {
+      print(response.statusCode);
+    }
+}
+String calculateRunTime(String startTime, String endTime) {
+  DateTime start = DateTime.parse(startTime);
+  DateTime end = DateTime.parse(endTime);
+
+  int differenceInSeconds = end.difference(start).inSeconds;
+  int hours = differenceInSeconds ~/ 3600;
+  int minutes = (differenceInSeconds % 3600) ~/ 60;
+  int seconds = differenceInSeconds % 60;
+
+  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+}
+  String calculateDistance(String startTime, String endTime, double averagePace) {
+    DateTime start = DateTime.parse(startTime);
+    DateTime end = DateTime.parse(endTime);
+
+    int differenceInSeconds = end.difference(start).inSeconds;
+
+    double distance = (differenceInSeconds / 3600) * averagePace;
+    distance = double.parse(distance.toStringAsFixed(2));
+    return distance.toString();
+  }
 
   Future<void> _requestLocationPermission(BuildContext context) async {
     final servicePermission = await Geolocator.isLocationServiceEnabled();
@@ -52,7 +88,6 @@ class HomeScreen extends StatelessWidget {
       MaterialPageRoute(builder: (context) => const RunScreen()),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -67,89 +102,97 @@ class HomeScreen extends StatelessWidget {
             onPressed: null,
             child: Icon(Icons.settings),
           )),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: ListView(
-              children: <Widget>[
-                ListTile(
-                  title: HomeCard(
-                    key: UniqueKey(),
-                    firstname: "Elin",
-                    lastname: 'Bartnes',
-                    username: 'EliBart',
-                    time: '00:06:23',
-                    distance: '5,54',
-                    averagePace: '6,32',
+          ListView(
+            children: [ 
+              Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                      itemCount: runHistoryList.length,
+                      itemBuilder: (context, index) {
+                        final runHistory = runHistoryList[index];
+                        return HomeCard(
+                          firstname: 'Elin',
+                          lastname: 'Bartnes', 
+                          username: 'EliBart', 
+                          time: calculateRunTime(runHistory['startTime'], runHistory['endTime']), 
+                          distance: calculateDistance(runHistory['startTime'], runHistory['endTime'], runHistory['avgPace']), 
+                          averagePace: runHistory['avgPace'].toString(),
+                      );
+                    },
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  width: double.infinity,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF78BC3F),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              side: const BorderSide(
-                                color: Color(0xFF386641),
-                              ),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 13),
-                          ),
-                          onPressed: () {
-                            // Call the _requestLocationPermission function
-                            _requestLocationPermission(context);
-                          },
-                          child: Text(
-                            'Join Run',
-                            style: TextStyle(
-                                fontSize: 20, fontStyle: FontStyle.normal),
-                          ),
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 10,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF78BC3F),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: const BorderSide(
+                          color: Color(0xFF386641),
                         ),
                       ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF78BC3F),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                              side: const BorderSide(
-                                color: Color(0xFF386641),
-                              ),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 13),
-                          ),
-                          onPressed: () {},
-                          child: const Text(
-                            'Create Run',
-                            style: TextStyle(
-                                fontSize: 20, fontStyle: FontStyle.normal),
-                          ),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                    ),
+                    onPressed: () {
+                      _requestLocationPermission(context);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child:  const Text(
+                      'Join Run',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontStyle: FontStyle.normal,
+                      ),
+                      ),
+                    ),
+                  ),                 
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF78BC3F),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: const BorderSide(
+                          color: Color(0xFF386641),
                         ),
                       ),
-                    ],
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                    ),
+                    onPressed: () {},
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: const Text(
+                      'Create Run',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontStyle: FontStyle.normal,
+                      ),
+                    ),
                   ),
-                ),
+                  ),
+                ],
               ),
             ),
           ),
+
         ],
       ),
-    ));
+      ),
+    );
   }
 }
