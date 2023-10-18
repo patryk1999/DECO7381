@@ -16,8 +16,8 @@ class _RoomState extends State<RoomScreen> {
   final _localVideoRenderer = RTCVideoRenderer();
   final _remoteVideoRenderer = RTCVideoRenderer();
   final sdpController = TextEditingController();
-  WebSocketChannel channel = WebSocketChannel.connect(
-      Uri.parse('ws://parabolic-clock-402211.ts.r.appspot.com'));
+  WebSocketChannel channel =
+      WebSocketChannel.connect(Uri.parse('wss://deco-websocket.onrender.com'));
   bool _offer = false;
 
   RTCPeerConnection? _peerConnection;
@@ -93,10 +93,9 @@ class _RoomState extends State<RoomScreen> {
   }
 
   void _createOffer() async {
-    print('gere');
     RTCSessionDescription description =
         await _peerConnection!.createOffer({'offerToReceiveVideo': 1});
-    print('lere');
+
     var session = parse(description.sdp.toString());
     print(session);
     _offer = true;
@@ -142,12 +141,18 @@ class _RoomState extends State<RoomScreen> {
 
   void initChannel() {
     channel.stream.listen((event) async {
+      print(event);
       //print('channel');
       var data = await jsonDecode(event);
+      print(data);
       //print(data);
+      print('type');
       var type = data['type'];
       var message = data['message'];
+      print(type);
+      print(message);
       if (_offer == false && type == 'offer') {
+        print('recieved offer');
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
