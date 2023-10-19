@@ -1,6 +1,5 @@
-// ignore: file_names
-import 'dart:convert';
-
+// ignore: file_namesxw
+import 'package:abacusfrontend/mocks/LocationDataMock.dart';
 import 'package:abacusfrontend/pages/loginScreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +10,6 @@ import 'package:abacusfrontend/pages/summaryScreen.dart';
 import 'package:http/http.dart' as http;
 
 class RunScreen extends StatefulWidget {
-  static double totalDistance = 0;
-  static int seconds = 0;
-  static int minutes = 0;
-  static int hours = 0;
-
   const RunScreen({Key? key}) : super(key: key);
 
   @override
@@ -26,33 +20,65 @@ class _RunScreenState extends State<RunScreen> {
   late GoogleMapController mapController;
   late Position? _previousPosition = null;
   late Position currentPosition;
+  late Position? _friendsPreviousPosition = null;
+  late Position friendCurrentPosition;
   late bool servicePermission = false;
   late LocationPermission permission;
   late Timer _timer;
   double _frozenDistance = 0;
   double _frozenPace = 0.00;
   bool _isTimerPaused = true;
+  double totalDistance = 0;
+  int second = 0;
+  int minute = 0;
+  int hour = 0;
+  double friendsTotalDistance = 0;
+
+  double totalDistanceCopy = 0;
+  int secondsCopy = 0;
+  int minutesCopy = 0;
+  int hoursCopy = 0;
+  double friendsTotalDistanceCopy = 0;
+  final locationDataMock = LocationDataMock();
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _getMockCurrentLocation();
     _startTimer();
   }
+
+  final List<Position> mockPositions = List.generate(50, (index) {
+    final latitude = 40.7128 + (0.0001 * index);
+    final longitude = -74.0060 + (0.0001 * index);
+
+    return Position(
+      latitude: latitude,
+      longitude: longitude,
+      accuracy: 10.0,
+      altitude: 0.0,
+      heading: 0.0,
+      speed: 0.0,
+      speedAccuracy: 0.0,
+      timestamp: DateTime.now().add(const Duration(seconds: 5)),
+    );
+  });
+  int currentIndex = 0;
 
   Future<int> addRun() async {
     final currentTime = DateTime.now();
 
     final startTime = currentTime.subtract(
       Duration(
-        hours: RunScreen.hours,
-        minutes: RunScreen.minutes,
-        seconds: RunScreen.seconds,
+        hours: hour,
+        minutes: minute,
+        seconds: second,
       ),
     );
 
     final url = Uri.parse(
-        "https://deco-websocket.onrender.com/run/addRun/?startTime=${startTime.toIso8601String()}&avgPace=${_calculatePace()}&endTime=${currentTime.toIso8601String()}");
+        "https://deco-websocket.onrender.com/run/addRun/?startTime=${startTime.toIso8601String()}&avgPace=${_calculatePace(totalDistance)}&endTime=${currentTime.toIso8601String()}");
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${LoginScreen.accessToken}',
@@ -61,6 +87,32 @@ class _RunScreenState extends State<RunScreen> {
     final response = await http.post(url, headers: headers);
 
     return response.statusCode;
+  }
+
+  Future<void> _getMockCurrentLocation() async {
+    // Use the current mock position
+    final position = mockPositions[currentIndex];
+
+    if (_friendsPreviousPosition != null) {
+      final distance = Geolocator.distanceBetween(
+        _friendsPreviousPosition!.latitude,
+        _friendsPreviousPosition!.longitude,
+        position.latitude,
+        position.longitude,
+      );
+
+      setState(() {
+        friendsTotalDistance += distance;
+      });
+    }
+
+    setState(() {
+      friendCurrentPosition = position;
+      _friendsPreviousPosition = position;
+    });
+
+    currentIndex++;
+    Future.delayed(const Duration(seconds: 5), _getMockCurrentLocation);
   }
 
   Future<void> _getCurrentLocation() async {
@@ -86,7 +138,7 @@ class _RunScreenState extends State<RunScreen> {
         );
 
         setState(() {
-          RunScreen.totalDistance += distance;
+          totalDistance += distance;
         });
       }
 
@@ -101,16 +153,15 @@ class _RunScreenState extends State<RunScreen> {
     if (_timer != null && !_isTimerPaused) {
       _timer.cancel();
       _isTimerPaused = true;
-      _frozenDistance = RunScreen.totalDistance;
-      _frozenPace = _calculatePace();
+      _frozenDistance = totalDistance;
+      _frozenPace = _calculatePace(totalDistance);
     }
   }
 
-  double _calculatePace() {
-    if (RunScreen.totalDistance > 0) {
-      final double kilometers = RunScreen.totalDistance / 1000;
-      final double hours =
-          RunScreen.hours + RunScreen.minutes / 60 + RunScreen.seconds / 3600;
+  double _calculatePace(double totalDistance) {
+    if (totalDistance > 0) {
+      final double kilometers = totalDistance / 1000;
+      final double hours = hour + minute / 60 + second / 3600;
       final double pace = hours > 0 ? kilometers / hours : 0;
       final formattedPace = pace.toStringAsFixed(1);
       return double.parse(formattedPace);
@@ -119,24 +170,47 @@ class _RunScreenState extends State<RunScreen> {
     }
   }
 
+  void _resetRunData() {
+    totalDistance = 0;
+    second = 0;
+    minute = 0;
+    hour = 0;
+    friendsTotalDistance = 0;
+    _pauseTimer();
+  }
+
   void _finishRun() {
     addRun();
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const SummaryScreen()));
+    totalDistanceCopy = totalDistance;
+    friendsTotalDistanceCopy = friendsTotalDistance;
+    hoursCopy = hour;
+    minutesCopy = minute;
+    secondsCopy = second;
+    _resetRunData();
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SummaryScreen(
+                  totalDistance: totalDistanceCopy,
+                  hours: hoursCopy,
+                  minutes: minutesCopy,
+                  seconds: secondsCopy,
+                  friendsTotalDistance: friendsTotalDistanceCopy,
+                )));
   }
 
   void _startTimer() {
     if (_isTimerPaused) {
-      RunScreen.totalDistance = _frozenDistance;
+      totalDistance = _frozenDistance;
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
-          RunScreen.seconds++;
-          if (RunScreen.seconds == 60) {
-            RunScreen.seconds = 0;
-            RunScreen.minutes++;
-            if (RunScreen.minutes == 60) {
-              RunScreen.minutes = 0;
-              RunScreen.hours++;
+          second++;
+          if (second == 60) {
+            second = 0;
+            minute++;
+            if (minute == 60) {
+              minute = 0;
+              hour++;
             }
           }
         });
@@ -189,22 +263,28 @@ class _RunScreenState extends State<RunScreen> {
                     ),
                     child: SizedBox(
                       child: GoogleMap(
-                        onMapCreated: (controller) {
-                          setState(() {
-                            mapController = controller;
-                          });
-                        },
-                        initialCameraPosition: CameraPosition(
-                          // ignore: unnecessary_null_comparison
-                          target: currentPosition != null
-                              ? LatLng(currentPosition.latitude,
-                                  currentPosition.longitude)
-                              : const LatLng(0, 0),
-                          zoom: 15.0,
-                        ),
-                        myLocationEnabled: true,
-                        myLocationButtonEnabled: true,
-                      ),
+                          onMapCreated: (controller) {
+                            setState(() {
+                              mapController = controller;
+                            });
+                          },
+                          initialCameraPosition: CameraPosition(
+                            // ignore: unnecessary_null_comparison
+                            target: currentPosition != null
+                                ? LatLng(currentPosition.latitude,
+                                    currentPosition.longitude)
+                                : const LatLng(0, 0),
+                            zoom: 15.0,
+                          ),
+                          markers: {
+                            Marker(
+                                markerId:
+                                    const MarkerId('currentLocationMarker'),
+                                position: LatLng(currentPosition.latitude,
+                                    currentPosition.longitude),
+                                icon: BitmapDescriptor.defaultMarkerWithHue(
+                                    BitmapDescriptor.hueGreen)),
+                          }),
                     ),
                   ),
                 ),
@@ -214,21 +294,27 @@ class _RunScreenState extends State<RunScreen> {
                     width: MediaQuery.of(context).size.width / 2,
                     height: MediaQuery.of(context).size.height / 2,
                     child: GoogleMap(
-                      onMapCreated: (controller) {
-                        setState(() {
-                          mapController = controller;
-                        });
-                      },
-                      initialCameraPosition: CameraPosition(
-                        target: currentPosition != null
-                            ? LatLng(currentPosition.latitude,
-                                currentPosition.longitude)
-                            : const LatLng(0, 0),
-                        zoom: 15.0,
-                      ),
-                      myLocationEnabled: true,
-                      myLocationButtonEnabled: true,
-                    ),
+                        onMapCreated: (controller) {
+                          setState(() {
+                            mapController = controller;
+                          });
+                        },
+                        initialCameraPosition: CameraPosition(
+                          target: friendCurrentPosition != null
+                              ? LatLng(friendCurrentPosition.latitude,
+                                  friendCurrentPosition.longitude)
+                              : const LatLng(0, 0),
+                          zoom: 15.0,
+                        ),
+                        markers: {
+                          Marker(
+                              markerId:
+                                  const MarkerId('friendCurrentLocationMarker'),
+                              position: LatLng(friendCurrentPosition.latitude,
+                                  friendCurrentPosition.longitude),
+                              icon: BitmapDescriptor.defaultMarkerWithHue(
+                                  BitmapDescriptor.hueBlue)),
+                        }),
                   ),
                 ),
               ],
@@ -260,7 +346,7 @@ class _RunScreenState extends State<RunScreen> {
                           style: TextStyle(fontSize: 18),
                         ),
                         Text(
-                          '${RunScreen.hours.toString().padLeft(2, '0')}:${RunScreen.minutes.toString().padLeft(2, '0')}:${RunScreen.seconds.toString().padLeft(2, '0')}',
+                          '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}:${second.toString().padLeft(2, '0')}',
                           style: const TextStyle(fontSize: 34),
                         ),
                         const Text(
@@ -270,7 +356,7 @@ class _RunScreenState extends State<RunScreen> {
                         Text(
                           _isTimerPaused
                               ? '${(_frozenDistance / 1000).toStringAsFixed(2)} km'
-                              : '${(RunScreen.totalDistance / 1000).toStringAsFixed(2)} km',
+                              : '${(totalDistance / 1000).toStringAsFixed(2)} km',
                           style: const TextStyle(fontSize: 34),
                         ),
                         const Text(
@@ -280,7 +366,7 @@ class _RunScreenState extends State<RunScreen> {
                         Text(
                           _isTimerPaused
                               ? "${_frozenPace.toStringAsFixed(2)} km/h"
-                              : "${_calculatePace()} km/h",
+                              : "${_calculatePace(totalDistance)} km/h",
                           style: const TextStyle(fontSize: 34),
                         ),
                         Row(children: [
@@ -367,17 +453,26 @@ class _RunScreenState extends State<RunScreen> {
                         "Time",
                         style: TextStyle(fontSize: 18),
                       ),
-                      const Text("00:00:00", style: TextStyle(fontSize: 34)),
+                      Text(
+                        '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}:${second.toString().padLeft(2, '0')}',
+                        style: const TextStyle(fontSize: 34),
+                      ),
                       const Text(
                         "Distance",
                         style: TextStyle(fontSize: 18),
                       ),
-                      const Text("1.36 km", style: TextStyle(fontSize: 34)),
+                      Text(
+                        '${(friendsTotalDistance != null ? (friendsTotalDistance / 1000).toStringAsFixed(2) : "0.00")} km',
+                        style: TextStyle(fontSize: 34),
+                      ),
                       const Text(
                         "Average Pace",
                         style: TextStyle(fontSize: 18),
                       ),
-                      const Text("9.56 km/h", style: TextStyle(fontSize: 34)),
+                      Text(
+                        "${_calculatePace(friendsTotalDistance)} km/h",
+                        style: TextStyle(fontSize: 34),
+                      ),
                       SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
                           height: 80)

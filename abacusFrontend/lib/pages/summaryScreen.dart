@@ -4,28 +4,48 @@ import 'package:flutter/material.dart';
 import '../components/app_bar.dart';
 
 class SummaryScreen extends StatefulWidget {
-  const SummaryScreen({Key? key}) : super(key: key);
+  final double totalDistance;
+  final int hours;
+  final int minutes;
+  final int seconds;
+  final double friendsTotalDistance;
+  const SummaryScreen({
+    Key? key,
+    required this.totalDistance,
+    required this.hours,
+    required this.minutes,
+    required this.seconds,
+    required this.friendsTotalDistance,
+  }) : super(key: key);
 
   State<SummaryScreen> createState() => _SummaryScreenState();
 }
 
 class _SummaryScreenState extends State<SummaryScreen> {
-  late double distance = RunScreen.totalDistance;
-  late int hours = RunScreen.hours;
-  late int minutes = RunScreen.minutes;
-  late int seconds = RunScreen.seconds;
-  late double pace = calculatePace(hours, minutes, seconds, distance);
+  @override
+  void initState() {
+    super.initState();
+    pace = calculatePace(
+        widget.hours, widget.minutes, widget.seconds, widget.totalDistance);
+    friendPace = calculatePace(widget.hours, widget.minutes, widget.seconds,
+        widget.friendsTotalDistance);
 
-  late double friendDistance = 1.24;
-  late int friendHours = 00;
-  late int friendMinutes = 06;
-  late int friendSeconds = 45;
+    print(widget.seconds);
+  }
+
+  late double pace = calculatePace(
+      widget.hours, widget.minutes, widget.seconds, widget.totalDistance);
+
+  late double friendDistance = widget.friendsTotalDistance / 1000;
+  late int friendHours = widget.hours;
+  late int friendMinutes = widget.minutes;
+  late int friendSeconds = widget.seconds;
   late double friendPace =
       calculatePace(friendHours, friendMinutes, friendSeconds, friendDistance);
 
   double calculatePace(int hours, int minutes, int seconds, double distance) {
     double totalHours = hours + (minutes / 60.0) + (seconds / 3600.0);
-    double pace = distance / totalHours;
+    double pace = distance / (totalHours * 1000);
     return pace;
   }
 
@@ -75,7 +95,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                   ),
                 ),
                 Text(
-                  '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
+                  '${widget.hours.toString().padLeft(2, '0')}:${widget.minutes.toString().padLeft(2, '0')}:${widget.seconds.toString().padLeft(2, '0')}',
                   style: const TextStyle(
                     fontSize: 30,
                     color: Color(0xFF000000),
@@ -106,7 +126,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               ),
                             ),
                             Text(
-                              "${(distance).toStringAsFixed(2)} km",
+                              "${(widget.totalDistance).toStringAsFixed(2)} km",
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 fontSize: 30,
@@ -235,9 +255,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 color: Color(0xFF386641),
                               ),
                             ),
-                            distance > friendDistance
+                            widget.totalDistance > friendDistance
                                 ? Text(
-                                    "-${(distance - friendDistance).toStringAsFixed(2)} km",
+                                    "-${(widget.totalDistance - friendDistance).toStringAsFixed(2)} km",
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       fontSize: 30,
@@ -246,7 +266,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                     ),
                                   )
                                 : Text(
-                                    "+${(friendDistance - distance).toStringAsFixed(2)} km",
+                                    "+${(friendDistance - widget.totalDistance).toStringAsFixed(2)} km",
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       fontSize: 30,
