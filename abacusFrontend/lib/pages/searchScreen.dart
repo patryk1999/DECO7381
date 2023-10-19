@@ -1,8 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:abacusfrontend/components/simple_elevated_button.dart';
 import 'package:abacusfrontend/pages/loginScreen.dart';
 import 'package:abacusfrontend/pages/roomScreen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../components/user.dart';
 import 'package:http/http.dart' as http;
@@ -91,7 +94,7 @@ class _SearchScreenState extends State<SearchScreen>
 
       setState(() {
         friendsBackend = fetchedUsers;
-        filteredFriends = fetchedUsers; // Display the fetched data initially
+        filteredFriends = fetchedUsers;
       });
     }
   }
@@ -125,11 +128,12 @@ class _SearchScreenState extends State<SearchScreen>
 
       setState(() {
         allUsers = fetUsers;
-        filteredUsers = fetUsers; // Display the fetched data initially
+        filteredUsers = fetUsers;
       });
     } else {
-      // Handle error when the API request fails
-      // Show an error message or take other actions here
+      if (kDebugMode) {
+        print("Could not fetch all users");
+      }
     }
   }
 
@@ -143,10 +147,8 @@ class _SearchScreenState extends State<SearchScreen>
   void filterSearchResults(String query) {
     setState(() {
       if (query.isEmpty) {
-        // If the search query is empty, display the default friends list
         filteredFriends = friendsBackend;
       } else {
-        // Filter the friends list by username
         filteredFriends = friendsBackend
             .where((user) =>
                 user.username.toLowerCase().contains(query.toLowerCase()))
@@ -158,10 +160,8 @@ class _SearchScreenState extends State<SearchScreen>
   void filterSearchResultsUsers(String query) {
     setState(() {
       if (query.isEmpty) {
-        // If the search query is empty, display the default friends list
         filteredUsers = allUsers;
       } else {
-        // Filter the friends list by username
         filteredUsers = allUsers
             .where((user) =>
                 user.username.toLowerCase().contains(query.toLowerCase()))
@@ -252,7 +252,6 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
             mainAxisSize: MainAxisSize.min,
             children: [
               Text("Username: ${user.username}"),
-              // Add more user information here as needed
             ],
           ),
           actions: [
@@ -265,7 +264,6 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
                   color: const Color(0xFF78BC3F),
                   onPressed: () async {
                     await addFriend(user.username);
-                    // ignore: use_build_context_synchronously
                     Navigator.of(context).pop();
                   },
                   child: const Text(

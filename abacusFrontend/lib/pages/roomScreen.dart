@@ -1,11 +1,15 @@
 import 'dart:convert';
+import 'package:abacusfrontend/components/app_bar.dart';
 import 'package:abacusfrontend/pages/homeScreen.dart';
+import 'package:abacusfrontend/pages/runScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:sdp_transform/sdp_transform.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class RoomScreen extends StatefulWidget {
+  static final _localVideoRenderer = RTCVideoRenderer();
+  static final _remoteVideoRenderer = RTCVideoRenderer();
   const RoomScreen({Key? key}) : super(key: key);
 
   @override
@@ -13,8 +17,6 @@ class RoomScreen extends StatefulWidget {
 }
 
 class _RoomState extends State<RoomScreen> {
-  final _localVideoRenderer = RTCVideoRenderer();
-  final _remoteVideoRenderer = RTCVideoRenderer();
   final sdpController = TextEditingController();
   WebSocketChannel channel =
       WebSocketChannel.connect(Uri.parse('wss://deco-websocket.onrender.com/'));
@@ -24,8 +26,8 @@ class _RoomState extends State<RoomScreen> {
   MediaStream? _localStream;
 
   initRenderer() async {
-    await _localVideoRenderer.initialize();
-    await _remoteVideoRenderer.initialize();
+    await RoomScreen._localVideoRenderer.initialize();
+    await RoomScreen._remoteVideoRenderer.initialize();
   }
 
   _getUserMedia() async {
@@ -39,7 +41,7 @@ class _RoomState extends State<RoomScreen> {
     MediaStream stream =
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
 
-    _localVideoRenderer.srcObject = stream;
+    RoomScreen._localVideoRenderer.srcObject = stream;
     return stream;
   }
 
@@ -87,7 +89,7 @@ class _RoomState extends State<RoomScreen> {
 
     pc.onAddStream = (stream) {
       print('addStream: ${stream.id}');
-      _remoteVideoRenderer.srcObject = stream;
+      RoomScreen._remoteVideoRenderer.srcObject = stream;
     };
 
     return pc;
@@ -102,6 +104,9 @@ class _RoomState extends State<RoomScreen> {
       'message': {'type': 'offer', 'message': json.encode(session)}
     }));
     _peerConnection!.setLocalDescription(description);
+    print("Offer thea");
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const RunScreen()));
   }
 
   void _createAnswer() async {
@@ -112,36 +117,33 @@ class _RoomState extends State<RoomScreen> {
       'message': {'type': 'answer', 'message': json.encode(session)}
     }));
     _peerConnection!.setLocalDescription(description);
+
+    print("Answer");
+
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const RunScreen()));
   }
 
   void initChannel() {
     channel.stream.listen((event) async {
-      print(event);
-      //print('channel');
       var data = await jsonDecode(event);
-      print(data);
-      //print(data);
-      print('type');
+
       var type = data['type'];
       var message = data['message'];
-      print(type);
-      print(message);
+
       if (_offer == false && type == 'offer') {
-        print('recieved offer');
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
-        print(description.toMap());
+
         await _peerConnection!.setRemoteDescription(description);
       } else if (_offer == true && type == 'answer') {
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
-        print(description.toMap());
+
         await _peerConnection!.setRemoteDescription(description);
       } else if (type == 'candidate' && _peerConnection != null) {
-        print('candidate here');
-        print(message);
         dynamic candidate = RTCIceCandidate(
             message['candidate'], message['sdpMid'], message['sdpMlineIndex']);
         await _peerConnection!.addCandidate(candidate);
@@ -149,6 +151,7 @@ class _RoomState extends State<RoomScreen> {
     });
   }
 
+  void startRun() {}
   @override
   void initState() {
     initChannel();
@@ -161,7 +164,7 @@ class _RoomState extends State<RoomScreen> {
 
   @override
   void dispose() async {
-    await _localVideoRenderer.dispose();
+    await RoomScreen._localVideoRenderer.dispose();
     sdpController.dispose();
     channel.sink.close();
     channel.stream.drain();
@@ -176,7 +179,7 @@ class _RoomState extends State<RoomScreen> {
               key: const Key('local'),
               margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
               decoration: const BoxDecoration(color: Colors.black),
-              child: RTCVideoView(_localVideoRenderer),
+              child: RTCVideoView(RoomScreen._localVideoRenderer),
             ),
           ),
           Flexible(
@@ -184,55 +187,31 @@ class _RoomState extends State<RoomScreen> {
               key: const Key('remote'),
               margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
               decoration: const BoxDecoration(color: Colors.black),
-              child: RTCVideoView(_remoteVideoRenderer),
+              child: RTCVideoView(RoomScreen._remoteVideoRenderer),
             ),
           ),
         ]),
       );
   @override
   Widget build(BuildContext context) {
+    TextButton firstButton = TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: const Color(0xFF78BC3F),
+      ),
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      },
+      child: const Icon(Icons.arrow_back),
+    );
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            const SizedBox(width: 20),
-            const Center(
-              child: Text("Start run", style: TextStyle(color: Colors.white)),
-            ),
-            const SizedBox(width: 60),
-            PopupMenuButton<int>(
-              icon: const Icon(Icons.settings, color: Colors.white),
-              onSelected: (item) => onSelected(context, item),
-              itemBuilder: (BuildContext context) {
-                return [
-                  const PopupMenuItem<int>(
-                    value: 0,
-                    child: Text('Settings'),
-                  ),
-                  const PopupMenuDivider(),
-                  const PopupMenuItem<int>(
-                    value: 1,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.logout,
-                          color: Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Text('Sign Out'),
-                      ],
-                    ),
-                  ),
-                ];
-              },
-            ),
-          ],
-        ),
+      appBar: CustomAppBar(
+        title: 'Start run',
+        firstButton: firstButton,
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
             child: Container(),

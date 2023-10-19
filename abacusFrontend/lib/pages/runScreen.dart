@@ -146,7 +146,7 @@ class _RunScreenState extends State<RunScreen> {
   @override
   Widget build(BuildContext context) {
     if (currentPosition == null) {
-      return CircularProgressIndicator();
+      return const CircularProgressIndicator();
     } else {
       return Scaffold(
         appBar: AppBar(
@@ -170,7 +170,6 @@ class _RunScreenState extends State<RunScreen> {
         ),
         body: Column(
           children: [
-            // First row
             Row(
               children: [
                 Expanded(
@@ -196,8 +195,8 @@ class _RunScreenState extends State<RunScreen> {
                         initialCameraPosition: CameraPosition(
                           // ignore: unnecessary_null_comparison
                           target: currentPosition != null
-                              ? LatLng(currentPosition!.latitude,
-                                  currentPosition!.longitude)
+                              ? LatLng(currentPosition.latitude,
+                                  currentPosition.longitude)
                               : const LatLng(0, 0),
                           zoom: 15.0,
                         ),
@@ -220,8 +219,8 @@ class _RunScreenState extends State<RunScreen> {
                       },
                       initialCameraPosition: CameraPosition(
                         target: currentPosition != null
-                            ? LatLng(currentPosition!.latitude,
-                                currentPosition!.longitude)
+                            ? LatLng(currentPosition.latitude,
+                                currentPosition.longitude)
                             : const LatLng(0, 0),
                         zoom: 15.0,
                       ),
@@ -232,7 +231,6 @@ class _RunScreenState extends State<RunScreen> {
                 ),
               ],
             ),
-
             Row(
               children: [
                 Expanded(

@@ -1,5 +1,5 @@
 // ignore: file_names
-import 'package:abacusfrontend/pages/loginScreen.dart';
+import 'package:abacusfrontend/components/app_bar.dart';
 import 'package:abacusfrontend/pages/roomScreen.dart';
 import 'package:abacusfrontend/pages/searchScreen.dart';
 import 'package:flutter/material.dart';
@@ -19,72 +19,26 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-void onSelected(BuildContext context, int item) {
-  switch (item) {
-    case 0:
-      break;
-    case 1:
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
-      break;
-  }
-}
-
 class AppBarExample extends StatelessWidget {
   const AppBarExample({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    TextButton firstButton = TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: const Color(0xFF78BC3F),
+      ),
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const SearchScreen()),
+        );
+      },
+      child: const Icon(Icons.search),
+    );
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF78BC3F),
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const SearchScreen()),
-                );
-              },
-              child: const Icon(
-                Icons.search,
-              ),
-            ),
-            const Text("Home", style: TextStyle(color: Colors.black)),
-            PopupMenuButton<int>(
-              icon: const Icon(Icons.settings, color: Color(0xFF78BC3F)),
-              onSelected: (item) => onSelected(context, item),
-              itemBuilder: (BuildContext context) {
-                return [
-                  const PopupMenuItem<int>(
-                    value: 0,
-                    child: Text('Settings'),
-                  ),
-                  const PopupMenuDivider(),
-                  const PopupMenuItem<int>(
-                    value: 1,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.logout,
-                          color: Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Text('Sign Out'),
-                      ],
-                    ),
-                  ),
-                ];
-              },
-            ),
-          ],
-        ),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        title: 'Home',
+        firstButton: firstButton,
       ),
       body: Column(
         children: [
