@@ -17,8 +17,9 @@ class _RoomState extends State<RoomScreen> {
   final _remoteVideoRenderer = RTCVideoRenderer();
   final sdpController = TextEditingController();
   WebSocketChannel channel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:8000/3/'));
+      WebSocketChannel.connect(Uri.parse('wss://deco-websocket.onrender.com'));
   bool _offer = false;
+  bool _recievedOffer = false;
 
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;
@@ -117,11 +118,15 @@ class _RoomState extends State<RoomScreen> {
   }
 
   void initChannel() {
+    print('init channel');
     channel.stream.listen((event) async {
+      print(event);
       var data = await jsonDecode(event);
       var type = data['type'];
       var message = data['message'];
+      print(message);
       if (_offer == false && type == 'offer') {
+        _recievedOffer = true;
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
@@ -131,9 +136,10 @@ class _RoomState extends State<RoomScreen> {
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
         await _peerConnection!.setRemoteDescription(description);
-      } else if (type == 'candidate' && _peerConnection != null) {
+      } else if (type == 'candidate' && _recievedOffer == true) {
         dynamic candidate = RTCIceCandidate(
             message['candidate'], message['sdpMid'], message['sdpMlineIndex']);
+        print('adding candidate');
         await _peerConnection!.addCandidate(candidate);
       }
     });
@@ -201,6 +207,12 @@ class _RoomState extends State<RoomScreen> {
               ),
             ),
             const Text("Start run", style: TextStyle(color: Colors.white)),
+            Row(children: [
+              Visibility(
+                visible: _recievedOffer,
+                child: readyWidget(),
+              )
+            ]),
             PopupMenuButton<int>(
               icon: const Icon(Icons.settings, color: Colors.white),
               onSelected: (item) => onSelected(context, item),
@@ -238,7 +250,7 @@ class _RoomState extends State<RoomScreen> {
           ),
           Center(
             child: ElevatedButton(
-              onPressed: _offer ? _createAnswer : _createOffer,
+              onPressed: _recievedOffer ? _createAnswer : _createOffer,
               style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF78BC3F)),
               child:
@@ -248,5 +260,14 @@ class _RoomState extends State<RoomScreen> {
         ],
       ),
     );
+  }
+}
+
+class readyWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    print('here');
+    return Text('Friend is ready!',
+        style: TextStyle(color: Colors.white), textAlign: TextAlign.center);
   }
 }
