@@ -17,7 +17,7 @@ class _RoomState extends State<RoomScreen> {
   final _remoteVideoRenderer = RTCVideoRenderer();
   final sdpController = TextEditingController();
   WebSocketChannel channel =
-      WebSocketChannel.connect(Uri.parse('ws://localhost:8000/3/'));
+      WebSocketChannel.connect(Uri.parse('wss://deco-websocket.onrender.com/'));
   bool _offer = false;
 
   RTCPeerConnection? _peerConnection;
@@ -55,7 +55,6 @@ class _RoomState extends State<RoomScreen> {
         "OfferToReceiveAudio": true,
         "OfferToReceiveVideo": true,
       },
-      "optional": [],
     };
 
     _localStream = await _getUserMedia();
@@ -63,7 +62,6 @@ class _RoomState extends State<RoomScreen> {
     RTCPeerConnection pc =
         await createPeerConnection(configuration, offerSdpConstraints);
 
-    // Replace addStream with addTrack
     _localStream!.getTracks().forEach((track) {
       pc.addTrack(track, _localStream!);
     });
@@ -88,7 +86,7 @@ class _RoomState extends State<RoomScreen> {
     };
 
     pc.onAddStream = (stream) {
-      print('addStream: ' + stream.id);
+      print('addStream: ${stream.id}');
       _remoteVideoRenderer.srcObject = stream;
     };
 
@@ -118,20 +116,32 @@ class _RoomState extends State<RoomScreen> {
 
   void initChannel() {
     channel.stream.listen((event) async {
+      print(event);
+      //print('channel');
       var data = await jsonDecode(event);
+      print(data);
+      //print(data);
+      print('type');
       var type = data['type'];
       var message = data['message'];
+      print(type);
+      print(message);
       if (_offer == false && type == 'offer') {
+        print('recieved offer');
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
+        print(description.toMap());
         await _peerConnection!.setRemoteDescription(description);
       } else if (_offer == true && type == 'answer') {
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
+        print(description.toMap());
         await _peerConnection!.setRemoteDescription(description);
       } else if (type == 'candidate' && _peerConnection != null) {
+        print('candidate here');
+        print(message);
         dynamic candidate = RTCIceCandidate(
             message['candidate'], message['sdpMid'], message['sdpMlineIndex']);
         await _peerConnection!.addCandidate(candidate);
@@ -185,22 +195,13 @@ class _RoomState extends State<RoomScreen> {
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                );
-              },
-              child: const Icon(
-                Icons.arrow_back,
-              ),
+            const SizedBox(width: 20),
+            const Center(
+              child: Text("Start run", style: TextStyle(color: Colors.white)),
             ),
-            const Text("Start run", style: TextStyle(color: Colors.white)),
+            const SizedBox(width: 60),
             PopupMenuButton<int>(
               icon: const Icon(Icons.settings, color: Colors.white),
               onSelected: (item) => onSelected(context, item),
