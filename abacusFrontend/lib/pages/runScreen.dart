@@ -15,6 +15,7 @@ class RunScreen extends StatefulWidget {
   static int seconds = 0;
   static int minutes = 0;
   static int hours = 0;
+  
 
   const RunScreen({Key? key}) : super(key: key);
 
@@ -32,6 +33,8 @@ class _RunScreenState extends State<RunScreen> {
   double _frozenDistance = 0;
   double _frozenPace = 0.00;
   bool _isTimerPaused = true;
+  String _runId = "";
+  
 
   @override
   void initState() {
@@ -59,8 +62,26 @@ class _RunScreenState extends State<RunScreen> {
     };
 
     final response = await http.post(url, headers: headers);
+    _runId = response.body;
 
     return response.statusCode;
+  }
+
+  Future<void> _updateConcurrentRun() async{
+    final url = Uri.parse(
+        "https://deco-websocket.onrender.com/run/updateConcurrentRun/?concurrentRun=1&runToUpdate=$_runId");
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${LoginScreen.accessToken}',
+    };
+
+    final response = await http.post(url, headers: headers);
+    if(response.statusCode == 200) {
+        print("Successfully updated run");
+      
+    } else {
+        print("Failed to update run");
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -117,10 +138,18 @@ class _RunScreenState extends State<RunScreen> {
     }
   }
 
-  void _finishRun() {
-    addRun();
-    Navigator.push(context,
+  void _finishRun() async{
+    int statusCode = await addRun();
+    if(statusCode == 200) {
+       _updateConcurrentRun();
+       Navigator.push(context,
         MaterialPageRoute(builder: (context) => const SummaryScreen()));
+    } else {
+      print("Failed to add run");
+    }
+   
+
+   
   }
 
   void _startTimer() {

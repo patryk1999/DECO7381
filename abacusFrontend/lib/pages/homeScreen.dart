@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   
 
-  Future<void> fetchRunHistory() async {
+  Future<List<Map<String, dynamic>>> fetchRunHistory() async {
     final accessToken = LoginScreen.accessToken;
     final uri = Uri.parse('https://deco-websocket.onrender.com/run/getHistory');
     final headers = {'Authorization': 'Bearer $accessToken'};
@@ -45,10 +45,9 @@ class _HomeScreenState extends State<HomeScreen> {
       final jsonResponse = json.decode(response.body);
       final runHistory = List<Map<String, dynamic>>.from(jsonResponse.values);
 
-      setState((){
-        runHistoryList = runHistory;
-      });
+      return runHistory;
     } else {
+      throw Exception('Failed to load run history');
       //handle error
      // print(response.statusCode);
     }
@@ -133,63 +132,82 @@ String calculateRunTime(String startTime, String endTime) {
           )),
       body: Stack(
         children: [
-          if (runHistoryList.isEmpty)
-              Column(
-                children: [
-                  const SizedBox(height: 50), // Add space between the text and the center of the screen
-                    const Text(
-                      "Welcome to Run with Friends!",
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF78BC3F),
-                      ),
-                    ),
-                  const SizedBox(height: 20,),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 30), // Add space between the two text widgets
-                    child: Text(
-                      "Start a run or join a friend's run to get started on your global running journey.",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontStyle: FontStyle.normal,
-                        color: Color(0xFF386641),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10,),
-                    Image.asset('assets/lizard.webp', 
-                      width: 180,
-                      height: 180
-                    ),
-                ],        
-              ),
-                     
-          ListView(
-            children: [ 
-              Column(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                      itemCount: runHistoryList.length,
-                      itemBuilder: (context, index) {
-                        final runHistory = runHistoryList[index];
-                        return HomeCard(
-                          firstname: firstname,
-                          lastname: lastname, 
-                          username: username, 
-                          otheruser: runHistory['runFriend']??"you",
-                          time: calculateRunTime(runHistory['startTime'], runHistory['endTime']), 
-                          distance: calculateDistance(runHistory['startTime'], runHistory['endTime'], runHistory['avgPace']), 
-                          averagePace: runHistory['avgPace'].toString(),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
+            FutureBuilder<List<Map<String, dynamic>>>(
+              future: fetchRunHistory(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text("Error loading data"),
+                  );
+                } else {
+                  final runHistoryList = snapshot.data;
+
+                  if (runHistoryList == null || runHistoryList.isEmpty) {
+                    return Column(
+                      children: [
+                        const SizedBox(height: 50),
+                        const Text(
+                          "Welcome to Run with Friends!",
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF78BC3F),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30),
+                          child: Text(
+                            "Start a run or join a friend's run to get started on your global running journey.",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontStyle: FontStyle.normal,
+                              color: Color(0xFF386641),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Image.asset(
+                          'assets/lizard.webp',
+                          width: 180,
+                          height: 180,
+                        ),
+                      ],
+                    );
+                  } else {
+                    return ListView(
+                      children: [
+                        Column(
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: runHistoryList.length,
+                              itemBuilder: (context, index) {
+                                final runHistory = runHistoryList[index];
+                                return HomeCard(
+                                  firstname: firstname,
+                                  lastname: lastname,
+                                  username: username,
+                                  otheruser: runHistory['runFriend'] ?? "Pat",
+                                  time: calculateRunTime(runHistory['startTime'], runHistory['endTime']),
+                                  distance: calculateDistance(runHistory['startTime'], runHistory['endTime'], runHistory['avgPace']),
+                                  averagePace: runHistory['avgPace'].toString(),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }
+                }
+              },
+            ),
           Positioned(
             left: 20,
             right: 20,
