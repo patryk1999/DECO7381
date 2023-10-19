@@ -37,7 +37,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
       ),
       onPressed: () {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
+            MaterialPageRoute(builder: (context) =>  HomeScreen()));
       },
       child: const Icon(Icons.home),
     );

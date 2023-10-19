@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (onSubmitted != null) {
         onSubmitted!(username, password);
       }
-      final url = Uri.parse('http://127.0.0.1:8000/users/api/token/');
+      final url = Uri.parse('https://deco-websocket.onrender.com/users/api/token/');
       final userData = {
         'username': username,
         'password': password,
@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _navigateToNewPage() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+        context, MaterialPageRoute(builder: (context) => HomeScreen()));
   }
 
   @override
