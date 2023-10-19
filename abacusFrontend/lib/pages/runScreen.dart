@@ -19,7 +19,7 @@ class RunScreen extends StatefulWidget {
 class _RunScreenState extends State<RunScreen> {
   late GoogleMapController mapController;
   late Position? _previousPosition = null;
-  late Position currentPosition;
+  late Position? currentPosition = null;
   late Position? _friendsPreviousPosition = null;
   late Position friendCurrentPosition;
   late bool servicePermission = false;
@@ -270,8 +270,8 @@ class _RunScreenState extends State<RunScreen> {
                           initialCameraPosition: CameraPosition(
                             // ignore: unnecessary_null_comparison
                             target: currentPosition != null
-                                ? LatLng(currentPosition.latitude,
-                                    currentPosition.longitude)
+                                ? LatLng(currentPosition!.latitude,
+                                    currentPosition!.longitude)
                                 : const LatLng(0, 0),
                             zoom: 15.0,
                           ),
@@ -279,8 +279,8 @@ class _RunScreenState extends State<RunScreen> {
                             Marker(
                                 markerId:
                                     const MarkerId('currentLocationMarker'),
-                                position: LatLng(currentPosition.latitude,
-                                    currentPosition.longitude),
+                                position: LatLng(currentPosition!.latitude,
+                                    currentPosition!.longitude),
                                 icon: BitmapDescriptor.defaultMarkerWithHue(
                                     BitmapDescriptor.hueGreen)),
                           }),
