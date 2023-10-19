@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState((){
         runHistoryList = runHistory;
       });
-      //print(runHistoryList);
+      print(runHistoryList);
       //print(response.body);
     } else {
      // print(response.statusCode);
@@ -66,7 +66,6 @@ Future<void> fetchUserData() async {
         firstname = jsonResponse['firstName'];
         lastname = jsonResponse['lastName'];
         username = jsonResponse['username'];
-        otheruser = jsonResponse['concurentUser'];
       });
       print(response.body);
     } else {
@@ -133,6 +132,38 @@ String calculateRunTime(String startTime, String endTime) {
           )),
       body: Stack(
         children: [
+          if (runHistoryList.isEmpty)
+              Column(
+                children: [
+                  const SizedBox(height: 50), // Add space between the text and the center of the screen
+                    const Text(
+                      "Welcome to Run with Friends!",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF78BC3F),
+                      ),
+                    ),
+                  const SizedBox(height: 20,),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 30), // Add space between the two text widgets
+                    child: Text(
+                      "Start a run or join a friend's run to get started on your global running journey.",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontStyle: FontStyle.normal,
+                        color: Color(0xFF386641),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                    Image.asset('assets/lizard.webp', 
+                      width: 180,
+                      height: 180
+                    ),
+                ],        
+              ),
+                     
           ListView(
             children: [ 
               Column(
@@ -147,7 +178,7 @@ String calculateRunTime(String startTime, String endTime) {
                           firstname: firstname,
                           lastname: lastname, 
                           username: username, 
-                          otheruser: otheruser,
+                          otheruser: runHistory['runFriend']??"you",
                           time: calculateRunTime(runHistory['startTime'], runHistory['endTime']), 
                           distance: calculateDistance(runHistory['startTime'], runHistory['endTime'], runHistory['avgPace']), 
                           averagePace: runHistory['avgPace'].toString(),
