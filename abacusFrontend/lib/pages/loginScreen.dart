@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _navigateToNewPage() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+        context, MaterialPageRoute(builder: (context) => HomeScreen()));
   }
 
   @override

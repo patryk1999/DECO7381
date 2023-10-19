@@ -324,6 +324,8 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
                   ),
                   Expanded(
                     child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: filteredFriends.length,
                       itemBuilder: (context, index) {
                         final user = filteredFriends[index];
@@ -377,6 +379,8 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
                   ),
                   Expanded(
                     child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: filteredUsers.length,
                       itemBuilder: (context, index) {
                         final user = filteredUsers[index];

@@ -65,6 +65,7 @@ class _RunScreenState extends State<RunScreen> {
     );
   });
   int currentIndex = 0;
+  String _runId = "";
 
   Future<int> addRun() async {
     final currentTime = DateTime.now();
@@ -85,8 +86,25 @@ class _RunScreenState extends State<RunScreen> {
     };
 
     final response = await http.post(url, headers: headers);
+    _runId = response.body;
 
     return response.statusCode;
+  }
+
+  Future<void> _updateConcurrentRun() async {
+    final url = Uri.parse(
+        "https://deco-websocket.onrender.com/run/updateConcurrentRun/?concurrentRun=1&runToUpdate=$_runId");
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${LoginScreen.accessToken}',
+    };
+
+    final response = await http.post(url, headers: headers);
+    if (response.statusCode == 200) {
+      print("Successfully updated run");
+    } else {
+      print("Failed to update run");
+    }
   }
 
   Future<void> _getMockCurrentLocation() async {
@@ -178,24 +196,29 @@ class _RunScreenState extends State<RunScreen> {
     _pauseTimer();
   }
 
-  void _finishRun() {
-    addRun();
+  void _finishRun() async {
+    int statusCode = await addRun();
     totalDistanceCopy = totalDistance;
     friendsTotalDistanceCopy = friendsTotalDistance;
     hoursCopy = hour;
     minutesCopy = minute;
     secondsCopy = second;
     _resetRunData();
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => SummaryScreen(
-                  totalDistance: totalDistanceCopy,
-                  hours: hoursCopy,
-                  minutes: minutesCopy,
-                  seconds: secondsCopy,
-                  friendsTotalDistance: friendsTotalDistanceCopy,
-                )));
+    if (statusCode == 200) {
+      _updateConcurrentRun();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SummaryScreen(
+                    totalDistance: totalDistanceCopy,
+                    hours: hoursCopy,
+                    minutes: minutesCopy,
+                    seconds: secondsCopy,
+                    friendsTotalDistance: friendsTotalDistanceCopy,
+                  )));
+    } else {
+      print("Failed to add run");
+    }
   }
 
   void _startTimer() {
