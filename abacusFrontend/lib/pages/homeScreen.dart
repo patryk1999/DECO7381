@@ -13,6 +13,8 @@ import 'package:http/http.dart' as http; // Import the RunScreen
 
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
     @override
     _HomeScreenState createState() => _HomeScreenState();
 }
@@ -35,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> fetchRunHistory() async {
     final accessToken = LoginScreen.accessToken;
-    final uri = Uri.parse('http://127.0.0.1:8000/run/getHistory');
+    final uri = Uri.parse('https://deco-websocket.onrender.com/run/getHistory');
     final headers = {'Authorization': 'Bearer $accessToken'};
 
     final response = await http.get(uri, headers: headers);
@@ -46,16 +48,15 @@ class _HomeScreenState extends State<HomeScreen> {
       setState((){
         runHistoryList = runHistory;
       });
-      print(runHistoryList);
-      //print(response.body);
     } else {
+      //handle error
      // print(response.statusCode);
     }
 }
 
 Future<void> fetchUserData() async {
     final accessToken = LoginScreen.accessToken;
-    final uri = Uri.parse('http://127.0.0.1:8000/users/getMyData/');
+    final uri = Uri.parse('https://deco-websocket.onrender.com/users/getMyData/');
     final headers = {'Authorization': 'Bearer $accessToken'};
 
     final response = await http.get(uri, headers: headers);
@@ -67,9 +68,9 @@ Future<void> fetchUserData() async {
         lastname = jsonResponse['lastName'];
         username = jsonResponse['username'];
       });
-      print(response.body);
     } else {
-      print(response.statusCode);
+      //handle error 
+      //print(response.statusCode);
     }
 }
 
