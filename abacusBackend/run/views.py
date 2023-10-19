@@ -56,18 +56,20 @@ def getHistory(request):
     token = AccessToken(userId.split(' ')[1])
     userId = token.payload['user_id']
     history = Run.objects.filter(user=userId)
-   # print(history)
     historyDict = {}
     for run in history:
        attributeArray = {}
        attributeArray['startTime'] = run.startTime.strftime("%Y-%m-%d %H:%M:%S")
        attributeArray['endTime'] = run.endTime.strftime("%Y-%m-%d %H:%M:%S")
        attributeArray['avgPace'] = run.avgPace
+    
        if(run.concurrentRun is not None):
            runID = run.id
            run =  Run.objects.get(id=runID)
-           user = run.user
+           concurrentRun = Run.objects.get(id=run.concurrentRun.id)
+           user = concurrentRun.user
            attributeArray['runFriend'] = user.username
            
-       historyDict[run.created_at.strftime("%Y-%m-%d %H:%M:%S")] = attributeArray
+       historyDict[run.startTime.strftime("%Y-%m-%d %H:%M:%S")] = attributeArray
+       print(historyDict)
     return JsonResponse(historyDict)
