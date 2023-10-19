@@ -1,8 +1,16 @@
+<div style="text-align: center; margin-bottom: 10px;">
+    <img src="abacusFrontend/assets/Rwf.png" alt="Image Description" width="200" >
+</div>
+
 # DECO7381
 
 Run with Friends
 
-## Running backend
+## Backend
+
+The application have a Django backend with an sqlite3 database. Django channels is used to handle websocket connections and function as a signalling server for WebRTC.
+
+### Running backend
 
 First install all the required packages by running  
 `pip install -r requirements.txt`
