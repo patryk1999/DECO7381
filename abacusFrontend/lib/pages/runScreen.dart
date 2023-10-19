@@ -75,6 +75,7 @@ class _RunScreenState extends State<RunScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
+
     Geolocator.getPositionStream().listen((position) {
       if (_previousPosition != null) {
         final distance = Geolocator.distanceBetween(
@@ -111,9 +112,10 @@ class _RunScreenState extends State<RunScreen> {
       final double hours =
           RunScreen.hours + RunScreen.minutes / 60 + RunScreen.seconds / 3600;
       final double pace = hours > 0 ? kilometers / hours : 0;
-      return pace;
+      final formattedPace = pace.toStringAsFixed(1);
+      return double.parse(formattedPace);
     } else {
-      return 0.00;
+      return 0.0;
     }
   }
 
