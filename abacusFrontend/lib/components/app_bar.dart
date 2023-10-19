@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final Function()? onPressed;
+
   final TextButton firstButton;
 
   const CustomAppBar({
     required this.title,
-    this.onPressed,
     required this.firstButton,
     Key? key,
   }) : super(key: key);
@@ -31,12 +30,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: false,
       backgroundColor: Colors.white,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           firstButton,
-          Text(title, style: const TextStyle(color: Colors.black)),
+          Flexible(
+            child: Text(
+              title,
+              style: const TextStyle(color: Colors.black),
+              textAlign: TextAlign.center,
+            ),
+          ),
           PopupMenuButton<int>(
             icon: const Icon(Icons.settings, color: Color(0xFF78BC3F)),
             onSelected: (item) => onSelected(context, item),

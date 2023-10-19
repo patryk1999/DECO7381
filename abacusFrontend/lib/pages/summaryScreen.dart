@@ -1,5 +1,4 @@
 import 'package:abacusfrontend/pages/homeScreen.dart';
-import 'package:abacusfrontend/pages/runScreen.dart';
 import 'package:flutter/material.dart';
 import '../components/app_bar.dart';
 
@@ -29,8 +28,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
         widget.hours, widget.minutes, widget.seconds, widget.totalDistance);
     friendPace = calculatePace(widget.hours, widget.minutes, widget.seconds,
         widget.friendsTotalDistance);
-
-    print(widget.seconds);
   }
 
   late double pace = calculatePace(
@@ -126,7 +123,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               ),
                             ),
                             Text(
-                              "${(widget.totalDistance).toStringAsFixed(2)} km",
+                              "${(widget.totalDistance / 1000).toStringAsFixed(2)} km",
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 fontSize: 30,
@@ -257,7 +254,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                             ),
                             widget.totalDistance > friendDistance
                                 ? Text(
-                                    "-${(widget.totalDistance - friendDistance).toStringAsFixed(2)} km",
+                                    "-${((widget.totalDistance - friendDistance) / 1000).toStringAsFixed(2)} km",
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       fontSize: 30,
@@ -266,7 +263,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                     ),
                                   )
                                 : Text(
-                                    "+${(friendDistance - widget.totalDistance).toStringAsFixed(2)} km",
+                                    "+${((friendDistance - widget.totalDistance) / 1000).toStringAsFixed(2)} km",
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       fontSize: 30,

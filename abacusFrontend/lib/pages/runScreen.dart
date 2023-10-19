@@ -90,7 +90,6 @@ class _RunScreenState extends State<RunScreen> {
   }
 
   Future<void> _getMockCurrentLocation() async {
-    // Use the current mock position
     final position = mockPositions[currentIndex];
 
     if (_friendsPreviousPosition != null) {
