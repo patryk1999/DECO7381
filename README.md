@@ -22,7 +22,10 @@ Run dev server `python manage.py runserver`
 ## Frontend
 
 ### RoomScreen
-The Room screen in the frontend functions as a mediator. Facilitating a connection between the two runners using WebRTC technology. When both runners are ready a video call will commence and a start run button will allow for the run to start. 
+The Room screen in the frontend functions as a mediator. Facilitating a connection between the two runners using WebRTC technology. When both runners are ready a video call will commence and a start run button will allow for the run to start.
+
+Followed Guide: https://www.100ms.live/blog/flutter-webrtc
+
 
 ## Running frontend
 
