@@ -234,10 +234,10 @@ class _RoomState extends State<RoomScreen> {
               valueListenable: _recievedOffer,
               builder: (context, showFirst, child) {
                 return ElevatedButton(
-                    onPressed: (showFirst && _offer) ? () => _create() : null,
+                    onPressed: (!showFirst || !_offer) ? () => _create() : null,
                     style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF78BC3F)),
-                    child: const Text("Start run"));
+                    child: const Text("Ready"));
               }),
           ValueListenableBuilder(
               valueListenable: _recievedOffer,
