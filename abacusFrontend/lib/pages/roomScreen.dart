@@ -128,7 +128,6 @@ class _RoomState extends State<RoomScreen> {
 
   void initChannel() {
     channel.stream.listen((event) async {
-      print(_offer.toString() + _recievedOffer.value.toString());
       var data = await jsonDecode(event);
       var type = data['type'];
       var message = data['message'];
@@ -140,7 +139,6 @@ class _RoomState extends State<RoomScreen> {
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
         await _peerConnection!.setRemoteDescription(description);
       } else if (_offer.value && type == 'answer' && !_recievedOffer.value) {
-        print('listen answer');
         _recievedOffer.value = true;
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
@@ -149,7 +147,6 @@ class _RoomState extends State<RoomScreen> {
       } else if (type == 'candidate' && _recievedOffer.value) {
         dynamic candidate = RTCIceCandidate(
             message['candidate'], message['sdpMid'], message['sdpMlineIndex']);
-        print('adding candidate');
         await _peerConnection!.addCandidate(candidate);
       }
     });
