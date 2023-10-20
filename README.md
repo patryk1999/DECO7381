@@ -25,7 +25,7 @@ The Room screen in the frontend functions as a mediator. Facilitating a connecti
 
 Followed Guide: https://www.100ms.live/blog/flutter-webrtc
 
-## Plugins
+### Plugins
 
 On the Run screen the get the users location we have used the Flutter GeoLocator plugin: https://pub.dev/packages/geolocator
 For the map we have used the google_maps_flutter package: https://pub.dev/packages/google_maps_flutter
