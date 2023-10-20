@@ -178,7 +178,7 @@ class _RoomState extends State<RoomScreen> {
 
   SizedBox videoRenderers() => SizedBox(
         height: 210,
-        child: Row(children: [
+        child: Column(children: [
           Flexible(
             child: Container(
               key: const Key('local'),
@@ -216,7 +216,7 @@ class _RoomState extends State<RoomScreen> {
         title: 'Start run',
         firstButton: firstButton,
       ),
-      body: Column(
+      body: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Padding(padding: const EdgeInsets.all(8.0), child: videoRenderers()),
