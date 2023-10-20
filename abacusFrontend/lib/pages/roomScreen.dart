@@ -216,11 +216,28 @@ class _RoomState extends State<RoomScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          RTCVideoView(localVideoRenderer),
-          const SizedBox(
-            height: 20,
+          Expanded(
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                key: const Key('local'),
+                margin: const EdgeInsets.all(5.0),
+                decoration: const BoxDecoration(color: Colors.black),
+                child: RTCVideoView(localVideoRenderer),
+              ),
+            ),
           ),
-          RTCVideoView(remoteVideoRenderer),
+          Expanded(
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                key: const Key('remote'),
+                margin: const EdgeInsets.all(5.0),
+                decoration: const BoxDecoration(color: Colors.black),
+                child: RTCVideoView(remoteVideoRenderer),
+              ),
+            ),
+          ),
           const SizedBox(
             height: 20,
           ),
