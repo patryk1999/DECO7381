@@ -440,7 +440,7 @@ class _RunScreenState extends State<RunScreen> {
                                       "FINISH",
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16,
+                                        fontSize: 13,
                                       ),
                                     ),
                                   ),
