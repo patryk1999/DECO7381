@@ -106,7 +106,6 @@ class _RoomState extends State<RoomScreen> {
 
   void _create() async {
     if (_recievedOffer.value && !_offer.value) {
-      print('creating answer');
       _offer.value = true;
       RTCSessionDescription description =
           await _peerConnection!.createAnswer({'offerToReceiveVideo': 1});
@@ -116,7 +115,6 @@ class _RoomState extends State<RoomScreen> {
       }));
       _peerConnection!.setLocalDescription(description);
     } else if (!_offer.value && !_recievedOffer.value) {
-      print('creating offer');
       RTCSessionDescription description =
           await _peerConnection!.createOffer({'offerToReceiveVideo': 1});
       var session = parse(description.sdp.toString());
@@ -249,7 +247,7 @@ class _RoomState extends State<RoomScreen> {
                   : 'The runner is ready!');
             },
           ),
-          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             ValueListenableBuilder(
                 valueListenable: _offer,
                 builder: (context, offer, child) {
