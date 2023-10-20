@@ -216,7 +216,14 @@ class _RoomState extends State<RoomScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(padding: const EdgeInsets.all(8.0), child: videoRenderers()),
+          RTCVideoView(localVideoRenderer),
+          const SizedBox(
+            height: 20,
+          ),
+          RTCVideoView(remoteVideoRenderer),
+          const SizedBox(
+            height: 20,
+          ),
           ValueListenableBuilder<bool>(
             valueListenable: _recievedOffer,
             builder: (context, showFirst, child) {
