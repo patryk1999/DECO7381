@@ -1,4 +1,6 @@
 // ignore: file_namesxw
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:abacusfrontend/mocks/LocationDataMock.dart';
 import 'package:abacusfrontend/pages/loginScreen.dart';
 import 'package:flutter/foundation.dart';
@@ -256,15 +258,6 @@ class _RunScreenState extends State<RunScreen> {
           ),
           centerTitle: true,
           backgroundColor: const Color(0xFFFFFFFF),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(
-                Icons.settings,
-                color: Color(0xFF78BC3F),
-              ),
-              onPressed: () {},
-            ),
-          ],
         ),
         body: Column(
           children: [
@@ -427,16 +420,16 @@ class _RunScreenState extends State<RunScreen> {
                           ),
                           const SizedBox(width: 20),
                           Container(
-                            width: 70,
-                            height: 70,
+                            width: 60,
+                            height: 60,
                             decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                               color: Color(0xFF78BC3F),
                             ),
                             child: Center(
                               child: SizedBox(
-                                width: 60,
-                                height: 60,
+                                width: 50,
+                                height: 50,
                                 child: RawMaterialButton(
                                   shape: const CircleBorder(),
                                   onPressed: () {
