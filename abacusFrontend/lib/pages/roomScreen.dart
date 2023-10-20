@@ -230,28 +230,33 @@ class _RoomState extends State<RoomScreen> {
           ),
           ValueListenableBuilder(
               valueListenable: _offer,
-              builder: (context, showFirst, child) {
+              builder: (context, offer, child) {
                 return ElevatedButton(
-                    onPressed: (!showFirst) ? () => _create() : null,
+                    onPressed: (!offer) ? () => _create() : null,
                     style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF78BC3F)),
                     child: const Text("Ready"));
               }),
           ValueListenableBuilder(
               valueListenable: _recievedOffer,
-              builder: (context, showFirst, child) {
-                return ElevatedButton(
-                    onPressed: (showFirst && _offer.value)
-                        ? () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => const RunScreen()),
-                            );
-                          }
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF78BC3F)),
-                    child: const Text("Start run"));
+              builder: (context, recievedOffer, child) {
+                return ValueListenableBuilder(
+                    valueListenable: _offer,
+                    builder: (context, offer, child) {
+                      return ElevatedButton(
+                          onPressed: recievedOffer && offer
+                              ? () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const RunScreen()),
+                                  );
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF78BC3F)),
+                          child: const Text("Start run"));
+                    });
               })
         ],
       ),
