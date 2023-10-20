@@ -216,7 +216,7 @@ class _RoomState extends State<RoomScreen> {
         title: 'Start run',
         firstButton: firstButton,
       ),
-      body: Row(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Padding(padding: const EdgeInsets.all(8.0), child: videoRenderers()),
@@ -228,36 +228,41 @@ class _RoomState extends State<RoomScreen> {
                   : 'The runner is ready!');
             },
           ),
-          ValueListenableBuilder(
-              valueListenable: _offer,
-              builder: (context, offer, child) {
-                return ElevatedButton(
-                    onPressed: (!offer) ? () => _create() : null,
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF78BC3F)),
-                    child: const Text("Ready"));
-              }),
-          ValueListenableBuilder(
-              valueListenable: _recievedOffer,
-              builder: (context, recievedOffer, child) {
-                return ValueListenableBuilder(
-                    valueListenable: _offer,
-                    builder: (context, offer, child) {
-                      return ElevatedButton(
-                          onPressed: recievedOffer && offer
-                              ? () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const RunScreen()),
-                                  );
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF78BC3F)),
-                          child: const Text("Start run"));
-                    });
-              })
+          Row(children: [
+            ValueListenableBuilder(
+                valueListenable: _offer,
+                builder: (context, offer, child) {
+                  return ElevatedButton(
+                      onPressed: (!offer) ? () => _create() : null,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF78BC3F)),
+                      child: const Text("Ready"));
+                }),
+            ValueListenableBuilder(
+                valueListenable: _recievedOffer,
+                builder: (context, recievedOffer, child) {
+                  return ValueListenableBuilder(
+                      valueListenable: _offer,
+                      builder: (context, offer, child) {
+                        return ElevatedButton(
+                            onPressed: recievedOffer && offer
+                                ? () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RunScreen()),
+                                    );
+                                  }
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF78BC3F)),
+                            child: const Text("Start run"));
+                      });
+                })
+          ]),
+          const SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );
