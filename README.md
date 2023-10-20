@@ -12,10 +12,13 @@ The application have a Django backend with an sqlite3 database. Django channels 
 
 ### Running backend
 
+For local backend:
 First install all the required packages by running  
 `pip install -r requirements.txt`
 
 Run dev server `python manage.py runserver`
+
+The backend is now deployed to a web server so it is not nessacery to run the backend locally
 
 ## Frontend
 
