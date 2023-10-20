@@ -20,7 +20,7 @@ class _RoomState extends State<RoomScreen> {
   final sdpController = TextEditingController();
   WebSocketChannel channel =
       WebSocketChannel.connect(Uri.parse('wss://deco-websocket.onrender.com'));
-  bool _offer = false;
+  final ValueNotifier<bool> _offer = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _recievedOffer = ValueNotifier<bool>(false);
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;
@@ -105,9 +105,9 @@ class _RoomState extends State<RoomScreen> {
   }
 
   void _create() async {
-    if (_recievedOffer.value && !_offer) {
+    if (_recievedOffer.value && !_offer.value) {
       print('creating answer');
-      _offer = true;
+      _offer.value = true;
       RTCSessionDescription description =
           await _peerConnection!.createAnswer({'offerToReceiveVideo': 1});
       var session = parse(description.sdp.toString());
@@ -115,12 +115,12 @@ class _RoomState extends State<RoomScreen> {
         'message': {'type': 'answer', 'message': json.encode(session)}
       }));
       _peerConnection!.setLocalDescription(description);
-    } else if (!_offer && !_recievedOffer.value) {
+    } else if (!_offer.value && !_recievedOffer.value) {
       print('creating offer');
       RTCSessionDescription description =
           await _peerConnection!.createOffer({'offerToReceiveVideo': 1});
       var session = parse(description.sdp.toString());
-      _offer = true;
+      _offer.value = true;
       channel.sink.add(json.encode({
         'message': {'type': 'offer', 'message': json.encode(session)}
       }));
@@ -135,9 +135,9 @@ class _RoomState extends State<RoomScreen> {
       var type = data['type'];
       var message = data['message'];
 
-      if (!_offer && type == 'offer' && !_recievedOffer.value) {
+      if (!_offer.value && type == 'offer' && !_recievedOffer.value) {
         print('listen offer');
-        _offer = true;
+        _offer.value = true;
         _recievedOffer.value = true;
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
@@ -231,10 +231,10 @@ class _RoomState extends State<RoomScreen> {
             },
           ),
           ValueListenableBuilder(
-              valueListenable: _recievedOffer,
+              valueListenable: _offer,
               builder: (context, showFirst, child) {
                 return ElevatedButton(
-                    onPressed: (!showFirst || !_offer) ? () => _create() : null,
+                    onPressed: (!showFirst) ? () => _create() : null,
                     style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF78BC3F)),
                     child: const Text("Ready"));
@@ -243,7 +243,7 @@ class _RoomState extends State<RoomScreen> {
               valueListenable: _recievedOffer,
               builder: (context, showFirst, child) {
                 return ElevatedButton(
-                    onPressed: (showFirst && _offer)
+                    onPressed: (showFirst && _offer.value)
                         ? () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
