@@ -148,7 +148,7 @@ class _RoomState extends State<RoomScreen> {
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
         await _peerConnection!.setRemoteDescription(description);
-      } else if (type == 'candidate' && _recievedOffer == true) {
+      } else if (type == 'candidate' && _recievedOffer.value) {
         dynamic candidate = RTCIceCandidate(
             message['candidate'], message['sdpMid'], message['sdpMlineIndex']);
         print('adding candidate');
