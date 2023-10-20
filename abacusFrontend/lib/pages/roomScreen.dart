@@ -15,20 +15,19 @@ class RoomScreen extends StatefulWidget {
 }
 
 class _RoomState extends State<RoomScreen> {
-  final _localVideoRenderer = RTCVideoRenderer();
-  final _remoteVideoRenderer = RTCVideoRenderer();
+  final localVideoRenderer = RTCVideoRenderer();
+  final remoteVideoRenderer = RTCVideoRenderer();
   final sdpController = TextEditingController();
   WebSocketChannel channel =
       WebSocketChannel.connect(Uri.parse('wss://deco-websocket.onrender.com'));
-  bool _offer = false;
-  ValueNotifier<bool> _recievedOffer = ValueNotifier<bool>(false);
-
+  final ValueNotifier<bool> _offer = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _recievedOffer = ValueNotifier<bool>(false);
   RTCPeerConnection? _peerConnection;
   MediaStream? _localStream;
 
   initRenderer() async {
-    await _localVideoRenderer.initialize();
-    await _remoteVideoRenderer.initialize();
+    await localVideoRenderer.initialize();
+    await remoteVideoRenderer.initialize();
   }
 
   _getUserMedia() async {
@@ -38,11 +37,15 @@ class _RoomState extends State<RoomScreen> {
         'facingMode': 'user',
       },
     };
-
+    // if (WebRTC.platformIsIOS) {
+    //   mediaConstraints['video'] = {'deviceId': 'broadcast'};
+    // }
     MediaStream stream =
         await navigator.mediaDevices.getUserMedia(mediaConstraints);
+    setState(() {
+      localVideoRenderer.srcObject = stream;
+    });
 
-    _localVideoRenderer.srcObject = stream;
     return stream;
   }
 
@@ -92,63 +95,58 @@ class _RoomState extends State<RoomScreen> {
 
     pc.onAddStream = (stream) {
       print('addStream: ' + stream.id);
-      _remoteVideoRenderer.srcObject = stream;
+
+      setState(() {
+        remoteVideoRenderer.srcObject = stream;
+      });
     };
 
     return pc;
   }
 
-  void _createOffer() async {
-    RTCSessionDescription description =
-        await _peerConnection!.createOffer({'offerToReceiveVideo': 1});
-    var session = parse(description.sdp.toString());
-    _offer = true;
-    channel.sink.add(json.encode({
-      'message': {'type': 'offer', 'message': json.encode(session)}
-    }));
-    _peerConnection!.setLocalDescription(description);
-    print("offer hello");
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const RunScreen(),
-        ));
-  }
-
-  void _createAnswer() async {
-    RTCSessionDescription description =
-        await _peerConnection!.createAnswer({'offerToReceiveVideo': 1});
-    var session = parse(description.sdp.toString());
-    channel.sink.add(json.encode({
-      'message': {'type': 'answer', 'message': json.encode(session)}
-    }));
-    _peerConnection!.setLocalDescription(description);
-    print("answer");
+  void _create() async {
+    if (_recievedOffer.value && !_offer.value) {
+      _offer.value = true;
+      RTCSessionDescription description =
+          await _peerConnection!.createAnswer({'offerToReceiveVideo': 1});
+      var session = parse(description.sdp.toString());
+      channel.sink.add(json.encode({
+        'message': {'type': 'answer', 'message': json.encode(session)}
+      }));
+      _peerConnection!.setLocalDescription(description);
+    } else if (!_offer.value && !_recievedOffer.value) {
+      RTCSessionDescription description =
+          await _peerConnection!.createOffer({'offerToReceiveVideo': 1});
+      var session = parse(description.sdp.toString());
+      _offer.value = true;
+      channel.sink.add(json.encode({
+        'message': {'type': 'offer', 'message': json.encode(session)}
+      }));
+      _peerConnection!.setLocalDescription(description);
+    }
   }
 
   void initChannel() {
     channel.stream.listen((event) async {
-      print(_offer.toString() + _recievedOffer.toString());
       var data = await jsonDecode(event);
       var type = data['type'];
       var message = data['message'];
 
-      if (!_offer && type == 'offer' && !_recievedOffer.value) {
+      if (!_offer.value && type == 'offer' && !_recievedOffer.value) {
         _recievedOffer.value = true;
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
         await _peerConnection!.setRemoteDescription(description);
-      } else if (_offer == true && type == 'answer') {
+      } else if (_offer.value && type == 'answer' && !_recievedOffer.value) {
         _recievedOffer.value = true;
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
         await _peerConnection!.setRemoteDescription(description);
-      } else if (type == 'candidate' && _recievedOffer == true) {
+      } else if (type == 'candidate' && _recievedOffer.value) {
         dynamic candidate = RTCIceCandidate(
             message['candidate'], message['sdpMid'], message['sdpMlineIndex']);
-        print('adding candidate');
         await _peerConnection!.addCandidate(candidate);
       }
     });
@@ -166,34 +164,32 @@ class _RoomState extends State<RoomScreen> {
 
   @override
   void dispose() async {
-    await _localVideoRenderer.dispose();
+    await localVideoRenderer.dispose();
     sdpController.dispose();
     channel.sink.close();
     channel.stream.drain();
     super.dispose();
   }
 
-  SizedBox videoRenderers() => SizedBox(
-        height: 210,
-        child: Row(children: [
-          Flexible(
-            child: Container(
-              key: const Key('local'),
-              margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-              decoration: const BoxDecoration(color: Colors.black),
-              child: RTCVideoView(_localVideoRenderer),
-            ),
+  Column videoRenderers() => Column(children: [
+        Flexible(
+          child: Container(
+            key: const Key('local'),
+            margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+            decoration: const BoxDecoration(color: Colors.black),
+            child: RTCVideoView(localVideoRenderer),
           ),
-          Flexible(
-            child: Container(
-              key: const Key('remote'),
-              margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-              decoration: const BoxDecoration(color: Colors.black),
-              child: RTCVideoView(_remoteVideoRenderer),
-            ),
+        ),
+        Flexible(
+          child: Container(
+            key: const Key('remote'),
+            margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+            decoration: const BoxDecoration(color: Colors.black),
+            child: RTCVideoView(remoteVideoRenderer),
           ),
-        ]),
-      );
+        ),
+      ]);
+
   @override
   Widget build(BuildContext context) {
     TextButton firstButton = TextButton(
@@ -213,9 +209,33 @@ class _RoomState extends State<RoomScreen> {
         firstButton: firstButton,
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(padding: const EdgeInsets.all(8.0), child: videoRenderers()),
+          Expanded(
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                key: const Key('local'),
+                margin: const EdgeInsets.all(5.0),
+                decoration: const BoxDecoration(color: Colors.black),
+                child: RTCVideoView(localVideoRenderer),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                key: const Key('remote'),
+                margin: const EdgeInsets.all(5.0),
+                decoration: const BoxDecoration(color: Colors.black),
+                child: RTCVideoView(remoteVideoRenderer),
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
           ValueListenableBuilder<bool>(
             valueListenable: _recievedOffer,
             builder: (context, showFirst, child) {
@@ -224,18 +244,41 @@ class _RoomState extends State<RoomScreen> {
                   : 'The runner is ready!');
             },
           ),
-          Expanded(
-            child: Container(),
-          ),
-          Center(
-            child: ElevatedButton(
-              onPressed: _recievedOffer.value ? _createAnswer : _createOffer,
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF78BC3F)),
-              child: _recievedOffer.value
-                  ? const Text("Start run")
-                  : const Text("Create run"),
-            ),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            ValueListenableBuilder(
+                valueListenable: _offer,
+                builder: (context, offer, child) {
+                  return ElevatedButton(
+                      onPressed: (!offer) ? () => _create() : null,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF78BC3F)),
+                      child: const Text("Ready"));
+                }),
+            const SizedBox(width: 20),
+            ValueListenableBuilder(
+                valueListenable: _recievedOffer,
+                builder: (context, recievedOffer, child) {
+                  return ValueListenableBuilder(
+                      valueListenable: _offer,
+                      builder: (context, offer, child) {
+                        return ElevatedButton(
+                            onPressed: recievedOffer && offer
+                                ? () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RunScreen()),
+                                    );
+                                  }
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF78BC3F)),
+                            child: const Text("Start run"));
+                      });
+                })
+          ]),
+          const SizedBox(
+            height: 20,
           ),
         ],
       ),
