@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:abacusfrontend/components/app_bar.dart';
 import 'package:abacusfrontend/pages/homeScreen.dart';
 import 'package:abacusfrontend/pages/runScreen.dart';
 import 'package:flutter/material.dart';
@@ -201,58 +202,34 @@ class _RoomState extends State<RoomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    TextButton firstButton = TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: const Color(0xFF78BC3F),
+      ),
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      },
+      child: const Icon(Icons.arrow_back),
+    );
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                );
-              },
-              child: const Icon(
-                Icons.arrow_back,
-              ),
-            ),
-            const Text("Start run", style: TextStyle(color: Colors.white)),
-            PopupMenuButton<int>(
-              icon: const Icon(Icons.settings, color: Colors.white),
-              onSelected: (item) => onSelected(context, item),
-              itemBuilder: (BuildContext context) {
-                return [
-                  const PopupMenuItem<int>(
-                    value: 0,
-                    child: Text('Settings'),
-                  ),
-                  const PopupMenuDivider(),
-                  const PopupMenuItem<int>(
-                    value: 1,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.logout,
-                          color: Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Text('Sign Out'),
-                      ],
-                    ),
-                  ),
-                ];
-              },
-            ),
-          ],
-        ),
+      appBar: CustomAppBar(
+        title: 'Start run',
+        firstButton: firstButton,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          Padding(padding: const EdgeInsets.all(8.0), child: videoRenderers()),
+          ValueListenableBuilder<bool>(
+            valueListenable: _recievedOffer,
+            builder: (context, showFirst, child) {
+              return Text(!showFirst
+                  ? 'Wait, the runner is getting ready'
+                  : 'The runner is ready!');
+            },
+          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
