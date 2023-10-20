@@ -64,7 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
       if (onSubmitted != null) {
         onSubmitted!(username, password);
       }
-      final url = Uri.parse('https://deco-websocket.onrender.com/users/api/token/');
+      final url =
+          Uri.parse('https://deco-websocket.onrender.com/users/api/token/');
       final userData = {
         'username': username,
         'password': password,

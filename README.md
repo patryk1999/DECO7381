@@ -3,35 +3,27 @@
 </div>
 
 # DECO7381
+
 Run with Friends
 
 ## Backend
-The application have a Django backend with an sqlite3 database. Django channels is used to handle websocket connections and function as a signalling server for WebRTC. 
 
-### Running backend 
+The application have a Django backend with an sqlite3 database. Django channels is used to handle websocket connections and function as a signalling server for WebRTC.
+
+### Running backend
+
 First install all the required packages by running  
 `pip install -r requirements.txt`
 
-in abacusBackend directory
+Run dev server `python manage.py runserver`
 
-For running dev server locally use:
+## Running frontend
 
- `python manage.py runserver`
+Download flutter following the flutter installation guide [Installation Guide](https://docs.flutter.dev/get-started/install)
+Remember to set the path for flutter
 
-The backend is hosted at [https://deco-websocket.onrender.com](https://deco-websocket.onrender.com)
-We used Daphne to get the application running on the server. 
+The application can only be run on an actual physical device due to the augmented reality features:
+Follow this guide for Android [Android Flutter Guide](https://appmaking.com/run-flutter-apps-on-android-device/)
+Follow this guide for Ios [Ios FLutter Guide](https://medium.com/front-end-weekly/how-to-test-your-flutter-ios-app-on-your-ios-device-75924bfd75a8)
 
-## Frontend 
-
-### Running Frontend 
-
-#### Requirements
-* Flutter
-* Xcode
-
-To run frontend
-
-* `cd abacusFrontend`
-* `flutter run` 
-
-
+Go into the abacusFrontend folder and run `flutter run`

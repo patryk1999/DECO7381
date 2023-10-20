@@ -1,8 +1,8 @@
-
 import 'dart:convert';
 
 import 'package:abacusfrontend/components/home_card.dart';
 import 'package:abacusfrontend/pages/loginScreen.dart';
+import 'package:abacusfrontend/pages/roomScreen.dart';
 import 'package:abacusfrontend/pages/searchScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -10,17 +10,14 @@ import '../components/app_bar.dart';
 import 'runScreen.dart';
 import 'package:http/http.dart' as http; // Import the RunScreen
 
-
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-    @override
-    _HomeScreenState createState() => _HomeScreenState();
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   List<Map<String, dynamic>> runHistoryList = [];
   String firstname = "";
   String lastname = "";
@@ -33,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchRunHistory();
     fetchUserData();
   }
-  
 
   Future<List<Map<String, dynamic>>> fetchRunHistory() async {
     final accessToken = LoginScreen.accessToken;
@@ -41,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final headers = {'Authorization': 'Bearer $accessToken'};
 
     final response = await http.get(uri, headers: headers);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       final runHistory = List<Map<String, dynamic>>.from(jsonResponse.values);
 
@@ -49,44 +45,45 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       throw Exception('Failed to load run history');
       //handle error
-     // print(response.statusCode);
+      // print(response.statusCode);
     }
-}
+  }
 
-Future<void> fetchUserData() async {
+  Future<void> fetchUserData() async {
     final accessToken = LoginScreen.accessToken;
-    final uri = Uri.parse('https://deco-websocket.onrender.com/users/getMyData/');
+    final uri =
+        Uri.parse('https://deco-websocket.onrender.com/users/getMyData/');
     final headers = {'Authorization': 'Bearer $accessToken'};
 
     final response = await http.get(uri, headers: headers);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
 
-      setState((){
+      setState(() {
         firstname = jsonResponse['firstName'];
         lastname = jsonResponse['lastName'];
         username = jsonResponse['username'];
       });
     } else {
-      //handle error 
+      //handle error
       //print(response.statusCode);
     }
-}
+  }
 
+  String calculateRunTime(String startTime, String endTime) {
+    DateTime start = DateTime.parse(startTime);
+    DateTime end = DateTime.parse(endTime);
 
+    int differenceInSeconds = end.difference(start).inSeconds;
+    int hours = differenceInSeconds ~/ 3600;
+    int minutes = (differenceInSeconds % 3600) ~/ 60;
+    int seconds = differenceInSeconds % 60;
 
-String calculateRunTime(String startTime, String endTime) {
-  DateTime start = DateTime.parse(startTime);
-  DateTime end = DateTime.parse(endTime);
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
 
-  int differenceInSeconds = end.difference(start).inSeconds;
-  int hours = differenceInSeconds ~/ 3600;
-  int minutes = (differenceInSeconds % 3600) ~/ 60;
-  int seconds = differenceInSeconds % 60;
-
-  return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-}
-  String calculateDistance(String startTime, String endTime, double averagePace) {
+  String calculateDistance(
+      String startTime, String endTime, double averagePace) {
     DateTime start = DateTime.parse(startTime);
     DateTime end = DateTime.parse(endTime);
 
@@ -116,29 +113,33 @@ String calculateRunTime(String startTime, String endTime) {
       MaterialPageRoute(builder: (context) => const RunScreen()),
     );
   }
+
   @override
   Widget build(BuildContext context) {
+    TextButton firstButton = TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: const Color(0xFF78BC3F),
+      ),
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const SearchScreen()),
+        );
+      },
+      child: const Icon(Icons.search),
+    );
     return MaterialApp(
-        home: Scaffold(
-      appBar: const CustomAppBar(
+      home: Scaffold(
+        appBar: CustomAppBar(
           title: 'Home',
-          firstButton: TextButton(
-            onPressed: null,
-            child: Icon(Icons.search),
-          ),
-          secondButton: TextButton(
-            onPressed: null,
-            child: Icon(Icons.settings),
-          )),
-      body: Stack(
-        children: [
+          firstButton: firstButton,
+        ),
+        body: Stack(
+          children: [
             FutureBuilder<List<Map<String, dynamic>>>(
               future: fetchRunHistory(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return const Center(
                     child: Text("Error loading data"),
@@ -194,8 +195,13 @@ String calculateRunTime(String startTime, String endTime) {
                                   lastname: lastname,
                                   username: username,
                                   otheruser: runHistory['runFriend'] ?? "Pat",
-                                  time: calculateRunTime(runHistory['startTime'], runHistory['endTime']),
-                                  distance: calculateDistance(runHistory['startTime'], runHistory['endTime'], runHistory['avgPace']),
+                                  time: calculateRunTime(
+                                      runHistory['startTime'],
+                                      runHistory['endTime']),
+                                  distance: calculateDistance(
+                                      runHistory['startTime'],
+                                      runHistory['endTime'],
+                                      runHistory['avgPace']),
                                   averagePace: runHistory['avgPace'].toString(),
                                 );
                               },
@@ -208,76 +214,80 @@ String calculateRunTime(String startTime, String endTime) {
                 }
               },
             ),
-          Positioned(
-            left: 20,
-            right: 20,
-            bottom: 10,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF78BC3F),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        side: const BorderSide(
-                          color: Color(0xFF386641),
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 10,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF78BC3F),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          side: const BorderSide(
+                            color: Color(0xFF386641),
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const RoomScreen()),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 25),
+                        child: const Text(
+                          'Join Run',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontStyle: FontStyle.normal,
+                          ),
                         ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 13),
                     ),
-                    onPressed: () {
-                      _requestLocationPermission(context);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                    child:  const Text(
-                      'Join Run',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontStyle: FontStyle.normal,
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF78BC3F),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                          side: const BorderSide(
+                            color: Color(0xFF386641),
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 13),
                       ),
-                      ),
-                    ),
-                  ),                 
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF78BC3F),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        side: const BorderSide(
-                          color: Color(0xFF386641),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SearchScreen()),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: const Text(
+                          'Create Run',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontStyle: FontStyle.normal,
+                          ),
                         ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 13),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SearchScreen()),
-                            );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: const Text(
-                      'Create Run',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontStyle: FontStyle.normal,
-                      ),
-                    ),
-                  ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }

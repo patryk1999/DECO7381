@@ -1,7 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:abacusfrontend/components/simple_elevated_button.dart';
 import 'package:abacusfrontend/pages/loginScreen.dart';
+import 'package:abacusfrontend/pages/roomScreen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../components/user.dart';
 import 'package:http/http.dart' as http;
@@ -62,7 +66,8 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<void> fetchData() async {
-    final url = Uri.parse('https://deco-websocket.onrender.com/users/getFriends/');
+    final url =
+        Uri.parse('https://deco-websocket.onrender.com/users/getFriends/');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${LoginScreen.accessToken}',
@@ -89,13 +94,14 @@ class _SearchScreenState extends State<SearchScreen>
 
       setState(() {
         friendsBackend = fetchedUsers;
-        filteredFriends = fetchedUsers; // Display the fetched data initially
+        filteredFriends = fetchedUsers;
       });
     }
   }
 
   Future<void> fetchAllUsers() async {
-    final url = Uri.parse('https://deco-websocket.onrender.com/users/getAllUsers/');
+    final url =
+        Uri.parse('https://deco-websocket.onrender.com/users/getAllUsers/');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${LoginScreen.accessToken}',
@@ -122,11 +128,12 @@ class _SearchScreenState extends State<SearchScreen>
 
       setState(() {
         allUsers = fetUsers;
-        filteredUsers = fetUsers; // Display the fetched data initially
+        filteredUsers = fetUsers;
       });
     } else {
-      // Handle error when the API request fails
-      // Show an error message or take other actions here
+      if (kDebugMode) {
+        print("Could not fetch all users");
+      }
     }
   }
 
@@ -140,10 +147,8 @@ class _SearchScreenState extends State<SearchScreen>
   void filterSearchResults(String query) {
     setState(() {
       if (query.isEmpty) {
-        // If the search query is empty, display the default friends list
         filteredFriends = friendsBackend;
       } else {
-        // Filter the friends list by username
         filteredFriends = friendsBackend
             .where((user) =>
                 user.username.toLowerCase().contains(query.toLowerCase()))
@@ -155,10 +160,8 @@ class _SearchScreenState extends State<SearchScreen>
   void filterSearchResultsUsers(String query) {
     setState(() {
       if (query.isEmpty) {
-        // If the search query is empty, display the default friends list
         filteredUsers = allUsers;
       } else {
-        // Filter the friends list by username
         filteredUsers = allUsers
             .where((user) =>
                 user.username.toLowerCase().contains(query.toLowerCase()))
@@ -168,7 +171,8 @@ class _SearchScreenState extends State<SearchScreen>
   }
 
   Future<int> addFriend(String? username1) async {
-    final url = Uri.parse('https://deco-websocket.onrender.com/users/makeFriend/');
+    final url =
+        Uri.parse('https://deco-websocket.onrender.com/users/makeFriend/');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${widget.accessToken}',
@@ -197,30 +201,6 @@ class _SearchScreenState extends State<SearchScreen>
     }
   }
 
-  void _showLoadRunDialog(User user) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-              "Waiting for ${user.firstname} ${user.lastname} to join the run"),
-          content: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-          ),
-          actions: [
-            Center(
-              child: CircularProgressIndicator(
-                value: loadController.value,
-                semanticsLabel: 'Circular progress indicator',
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   _showCreateRunDialog(User user) {
     showDialog(
       context: context,
@@ -242,7 +222,11 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
                   color: const Color(0xFF78BC3F),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    _showLoadRunDialog(user);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RoomScreen()),
+                    );
                   },
                   child: const Text(
                     'Create run',
@@ -268,7 +252,6 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
             mainAxisSize: MainAxisSize.min,
             children: [
               Text("Username: ${user.username}"),
-              // Add more user information here as needed
             ],
           ),
           actions: [
@@ -281,7 +264,6 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
                   color: const Color(0xFF78BC3F),
                   onPressed: () async {
                     await addFriend(user.username);
-                    // ignore: use_build_context_synchronously
                     Navigator.of(context).pop();
                   },
                   child: const Text(
@@ -342,6 +324,8 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
                   ),
                   Expanded(
                     child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: filteredFriends.length,
                       itemBuilder: (context, index) {
                         final user = filteredFriends[index];
@@ -395,6 +379,8 @@ Do you want to run with ${user.firstname} ${user.lastname}?"""),
                   ),
                   Expanded(
                     child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: filteredUsers.length,
                       itemBuilder: (context, index) {
                         final user = filteredUsers[index];

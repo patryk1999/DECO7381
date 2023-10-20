@@ -38,6 +38,9 @@ dependencies:
   geolocator: ^10.0.0
   google_maps_flutter: ^2.5.0
   http: ^1.1.0
+  web_socket_channel: ^2.4.0
+  sdp_transform: ^0.3.2
+  flutter_webrtc: 0.9.42+hotfix.1
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +52,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  mockito: ^5.4.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
