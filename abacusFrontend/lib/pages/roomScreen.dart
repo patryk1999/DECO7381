@@ -176,27 +176,24 @@ class _RoomState extends State<RoomScreen> {
     super.dispose();
   }
 
-  SizedBox videoRenderers() => SizedBox(
-        height: 210,
-        child: Column(children: [
-          Flexible(
-            child: Container(
-              key: const Key('local'),
-              margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-              decoration: const BoxDecoration(color: Colors.black),
-              child: RTCVideoView(localVideoRenderer),
-            ),
+  Column videoRenderers() => Column(children: [
+        Flexible(
+          child: Container(
+            key: const Key('local'),
+            margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+            decoration: const BoxDecoration(color: Colors.black),
+            child: RTCVideoView(localVideoRenderer),
           ),
-          Flexible(
-            child: Container(
-              key: const Key('remote'),
-              margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-              decoration: const BoxDecoration(color: Colors.black),
-              child: RTCVideoView(remoteVideoRenderer),
-            ),
+        ),
+        Flexible(
+          child: Container(
+            key: const Key('remote'),
+            margin: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+            decoration: const BoxDecoration(color: Colors.black),
+            child: RTCVideoView(remoteVideoRenderer),
           ),
-        ]),
-      );
+        ),
+      ]);
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +214,7 @@ class _RoomState extends State<RoomScreen> {
         firstButton: firstButton,
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(padding: const EdgeInsets.all(8.0), child: videoRenderers()),
           ValueListenableBuilder<bool>(
@@ -228,7 +225,7 @@ class _RoomState extends State<RoomScreen> {
                   : 'The runner is ready!');
             },
           ),
-          Row(children: [
+          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             ValueListenableBuilder(
                 valueListenable: _offer,
                 builder: (context, offer, child) {
@@ -238,6 +235,7 @@ class _RoomState extends State<RoomScreen> {
                           backgroundColor: const Color(0xFF78BC3F)),
                       child: const Text("Ready"));
                 }),
+            const SizedBox(width: 20),
             ValueListenableBuilder(
                 valueListenable: _recievedOffer,
                 builder: (context, recievedOffer, child) {
