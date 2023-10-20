@@ -136,14 +136,12 @@ class _RoomState extends State<RoomScreen> {
       var message = data['message'];
 
       if (!_offer.value && type == 'offer' && !_recievedOffer.value) {
-        print('listen offer');
-        _offer.value = true;
         _recievedOffer.value = true;
         var decoded = await jsonDecode(message);
         String sdp = write(decoded, null);
         RTCSessionDescription description = RTCSessionDescription(sdp, type);
         await _peerConnection!.setRemoteDescription(description);
-      } else if (_offer == true && type == 'answer' && !_recievedOffer.value) {
+      } else if (_offer.value && type == 'answer' && !_recievedOffer.value) {
         print('listen answer');
         _recievedOffer.value = true;
         var decoded = await jsonDecode(message);
