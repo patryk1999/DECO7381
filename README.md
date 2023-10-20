@@ -10,12 +10,19 @@ Run with Friends
 
 The application have a Django backend with an sqlite3 database. Django channels is used to handle websocket connections and function as a signalling server for WebRTC.
 
+
+
 ### Running backend
 
 First install all the required packages by running  
 `pip install -r requirements.txt`
 
 Run dev server `python manage.py runserver`
+
+## Frontend
+
+### RoomScreen
+The Room screen in the frontend functions as a mediator. Facilitating a connection between the two runners using WebRTC technology. When both runners are ready a video call will commence and a start run button will allow for the run to start. 
 
 ## Running frontend
 
